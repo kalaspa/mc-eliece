@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 25
+/svn/!svn/ver/111/Classes
+END
+decorateur.py
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/69/Classes/decorateur.py
+END
+galois.py
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/112/Classes/galois.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/60/Classes/__init__.py
+END
+setup.py
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/107/Classes/setup.py
+END
+poly.py
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/!svn/ver/112/Classes/poly.py
+END
+matrice.py
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/112/Classes/matrice.py
+END
+corps.py
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/112/Classes/corps.py
+END
+bbs.py
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/81/Classes/bbs.py
+END
+goppa.py
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/111/Classes/goppa.py
+END
+arith.py
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/112/Classes/arith.py
+END
+clef.py
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/!svn/ver/112/Classes/clef.py
+END

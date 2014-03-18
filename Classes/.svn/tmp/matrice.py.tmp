@@ -1,0 +1,247 @@
+#*-coding:Utf-8 -*
+#!/usr/bin/python3.2
+"""Fichier Python contenant la classe matrice et les methodes associees """
+
+from corps import *
+from random import *
+
+class matrice(object):
+	"""Classe definissant l'element matrice en Python"""
+
+	def __init__(self,nbligne,nbcolonne,tableau):
+		"""Definition de la matrice avec gestion du cas erreur de taille"""
+		try:
+			if len(tableau) != nbligne * nbcolonne :
+				raise IndexError("Erreur de taille de la matrice durant l'initialisation")
+			self.nbligne=nbligne
+			self.nbcolonne=nbcolonne
+			self.tableau=tableau[::]
+		except IndexError as ex:
+			print(ex)
+		except AttributeError as ex:
+			print(ex)
+
+	def __repr__(self):
+		"""Representation de la matrice sous forme normalisee a l'appel de print"""
+		try:
+			rep = str(self.tableau[:self.nbcolonne])
+			for i in xrange(1,self.nbligne):
+				 rep+="\n" + str(self.tableau[i*self.nbcolonne:self.nbcolonne * (i+1)])
+			return rep
+		except AttributeError:
+			return "[]"
+
+	def __str__(self):
+		"""Definit la conversion d'une matrice en chaine de carateres """
+		return self.__repr__()
+
+	def __add__(self, autre):
+		"""Methode d'addition de 2 matrices"""
+		try:
+			if self.nbligne != autre.nbligne | self.nbcolonne != autre . nbcolonne:
+				raise TypeError("Erreur dans la taille des matrices")
+			tab = []
+			for i in xrange(len(self.tableau)):
+				tab.append(self.tableau[i] + autre.tableau[i])
+			return matrice(self.nbligne,self.nbcolonne,tab)
+		except TypeError as ex : 
+			print ex
+		except AttributeError:
+			print("On n'ajoute que des matrices entre elles")
+
+	def __sub__(self,autre):
+		"""Methode de soustraction de 2 matrices"""
+		return self + (-1)*autre
+
+	def __neg__(self):
+		"""Methode de passage a l'opposé"""
+		return -1*self
+
+	@controler_temps(0.1)
+	def __mul__(self,autre):
+	 	"""Methode de multiplication par un scalaire et par une matrice"""
+	 	try:
+	 		if self.nbcolonne != autre.nbligne:
+	 			raise TypeError("Probleme dans la taille des matrices a multiplier")
+	 		tab = []
+	 		for i in xrange(self.nbligne * autre.nbcolonne):
+	 			s=0
+	 			x=i%autre.nbcolonne
+	 			y=i/autre.nbcolonne
+	 			for j in xrange(self.nbcolonne):
+	 				s+=self.tableau[y*self.nbcolonne + j] * autre.tableau[x + j * autre.nbcolonne]
+	 			tab.append(s)
+	 		return matrice(self.nbligne,autre.nbcolonne,tab)
+	 	except AttributeError:
+	 		tab = []
+	 		for i in self.tableau:
+	 			tab.append(autre * i)
+	 		return matrice(self.nbligne,self.nbcolonne,tab)
+	 	except TypeError as ex:
+	 		print ex
+
+	def __rmul__(self,autre):
+	 	"""Autre sens de la multiplication """
+	 	return self.__mul__(autre)
+
+	def __pow__(self,indice):
+		"""Methode pour les puissances de matrice"""
+		try:
+			if self.nbligne != self.nbcolonne:
+				raise TypeError("Hop, hop, hop matrices carrées s'il te plait")
+			if type(indice)!=type(0):
+				raise TypeError("On ne fait que des indices entiers")
+			if indice==1:
+				return self
+			else:
+				N=self ** (indice//2)
+				if indice%2 == 0:
+					return N*N
+				else:
+					return self*N*N
+		except TypeError as ex:
+			print ex
+		except AttributeError:
+			print("Dans pow, erreur d'attribut")
+
+	def transpose(self):
+		"""Methode pour passer a la transposee"""
+		try:	
+			new_tableau = []
+			for i in xrange(self.nbcolonne):
+				new_tableau += self.tableau[i::self.nbcolonne]
+			return matrice(self.nbcolonne,self.nbligne,new_tableau)
+		except AttributeError:
+			print("Erreur d'attributs")
+
+	def copie(self):
+		"""Methode de copie de matrice"""
+		try:
+			new_tableau=[]
+			for i in self.tableau:
+				new_tableau.append(i+0)
+			return matrice(self.nbligne,self.nbcolonne,new_tableau)
+		except AttributeError:
+			print("Probleme d'attribut")
+
+	def echange(self,ligne1,ligne2):
+		"""Methode d'echange de ligne dans une matrice"""
+		try:
+			resultat = self.tableau[::]
+			if ligne1<1 or ligne1>self.nbligne or ligne2<1 or ligne2 > self.nbligne:
+				raise IndexError("Probleme dans le choix des lignes a echanger")
+			aux=resultat[self.nbcolonne * (ligne1 - 1):self.nbcolonne * (ligne1):]
+			resultat[self.nbcolonne * (ligne1-1):self.nbcolonne * (ligne1):]=resultat[self.nbcolonne * (ligne2-1):self.nbcolonne * (ligne2):]
+			resultat[self.nbcolonne * (ligne2-1):self.nbcolonne * (ligne2):]=aux
+			return matrice(self.nbligne,self.nbcolonne,resultat)
+		except AttributeError:
+			print("Probleme d'attribut")
+		except IndexError as ex:
+			print ex
+			print("durant echange")
+			return self
+
+	def mult_ligne(self,ligne,scalaire):
+		"""Methode de multiplication d'une ligne par un scalaire"""
+		try:	
+			if ligne<1 or ligne>self.nbligne:
+				raise IndexError("Probleme dans le choix de la ligne")
+			resultat = self.tableau[::]
+			resultat[self.nbcolonne * (ligne-1):self.nbcolonne * (ligne):]=[scalaire*i for i in resultat[self.nbcolonne * (ligne-1):self.nbcolonne * (ligne):]]
+			return matrice(self.nbligne,self.nbcolonne,resultat)
+		except AttributeError:
+			print("Probleme d'attribut")
+		except IndexError as ex:
+			print ex
+			print("durant mult_ligne")
+			return self
+
+	def cblineaire(self,ligne1,ligne2,scalaire=1):
+		"""Methode de cb lineraire qui retourne a la ligne 1 : ligne1+scalaire*ligne2"""
+		try:
+			
+			resultat = self.tableau[::]
+			if ligne1<1 or ligne1>self.nbligne or ligne2<1 or ligne2 > self.nbligne:
+				raise IndexError("Probleme dans le choix des lignes a echanger")
+			resultat[self.nbcolonne * (ligne1-1):self.nbcolonne * (ligne1):]=[resultat[(ligne1-1)*self.nbcolonne+i] + scalaire*resultat[(ligne2-1)*self.nbcolonne+i] for i in xrange(self.nbcolonne)]
+			return matrice(self.nbligne,self.nbcolonne,resultat)
+		except AttributeError:
+			print("Probleme d'attribut")
+		except IndexError as ex:
+			print ex
+			print("durant cblineaire avec les lignes {0}, {1} et le scalaire{2}".format(ligne1,ligne2,scalaire))
+			return self
+
+	@controler_temps(1)
+	def inverse(self):
+		"""Methode d'inverse de matrice"""
+		inversibilite=True	
+		n=self.nbligne
+		M=self.copie()				#Une copie est necessaire pour ne pas overwritten self
+		identite= [0 for i in range(n**2)]
+		identite[::n+1]=[1 for i in range(n)] 
+		identite = matrice(n,n,identite)		#initialisation d'une matrice identite
+		for i in xrange(n):				#boucle de descente, i représente le numero de la diagonale recherchee de la ligne 1(0) a n(n-1)
+			j=i
+			while j<n and M.tableau[n*j+i]==0: #Recherche d'une ligne dont le coefficient i soit non nul 
+				j+=1
+			if j==n:
+				inversibilite=False	 	#Si j==n alors aucun coefficient n'est non nul donc self pas inversible
+				break
+			if i!=j:					#Si i!=j, alors on doit echanger les lignes i+1 et j+1
+				M=M.echange(i+1,j+1)
+				identite=identite.echange(i+1,j+1)		#On fait de meme sur la matrice identite 
+			if M.tableau[i*n+i]!=1:		#Si le coefficient diagonnal !=1 on le rend egal a un par multiplication par son inverse
+				scalaire=1/M.tableau[i*n+i]
+				M=M.mult_ligne(i+1,scalaire)
+				identite=identite.mult_ligne(i+1,scalaire)
+			for j in xrange(i+1,n):			#Propagation : pour toutes les lignes sous la ligne i on rend les coefficients i nuls
+				scalaire=-M.tableau[j*n+i]
+				M=M.cblineaire(j+1,i+1,scalaire)
+				identite=identite.cblineaire(1+j,i+1,scalaire)
+		if inversibilite:					#si notre matrice est toujours inversible on remonte ! Pire que faire de la randonnée !
+			for  i in xrange(n-1,-1,-1):		#I designe toujours la ligne consideree, la meme chose en symetrique
+				j=i
+				while j>=0 and M.tableau[n*j+i]==0:
+					j-=1
+				if j==n:
+					inversibilite=False
+					break
+				if i!=j:
+					M=M.echange(i+1,j+1)
+					identite=identite.echange(i+1,j+1)
+				if M.tableau[i*n+i]!=1:
+					scalaire=1/M.tableau[i*n+i]
+					M=M.mult_ligne(i+1,scalaire)
+					identite=identite.mult_ligne(i+1,scalaire)
+				for j in xrange(i-1,-1,-1):
+					scalaire=-M.tableau[j*n+i]
+					M=M.cblineaire(j+1,i+1,scalaire)
+					identite=identite.cblineaire(1+j,i+1,scalaire)
+		if inversibilite:
+			return identite
+		else:
+			return matrice(n,n,[0 for i in range(n**2)]) #Par defaut, si la matrice n'est pas inversible bah on renvoie 0 pour pas decevoir
+
+def MtoZpZ(M,p=2):
+	resultat=[]
+	for i in M.tableau :
+		resultat.append(ZpZ(i,p))
+	return matrice(M.nbligne,M.nbcolonne,resultat)
+
+def MtoGalois(M,F):
+	resultat=[]
+	for i in M.tableau:
+		resultat.append(element(decomp(i,F.p),F))
+	return matrice(M.nbligne,M.nbcolonne,resultat)
+
+if __name__=="__main__":
+	F=corps(polynome([1,0,1,1]))
+	L=[element(polynome([]),F),element(polynome([1]),F),element(polynome([0,1]),F),element(polynome([1,1]),F),element(polynome([0,0,1]),F),element(polynome([1,0,1]),F),element(polynome([0,1,1]),F),element(polynome([1,1,1]),F)]
+	print L
+	M=[]
+	for i in xrange(900):
+		a=randint(0,7)
+		M.append(L[a])
+	M=matrice(30,30,M)
+	print M.inverse()*M
