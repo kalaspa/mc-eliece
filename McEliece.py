@@ -22,12 +22,15 @@ def  crypt():
 	try:
 		#Chargement de la clef et cryptage
 		avant = time()
-		pub_key = clef().load(pub_key)
+		try:
+			pub_key = clef_publique().load(pub_key)
+		except:
+			pub_key = clef_correcteur().load(pub_key)
 		pub_key.chiffrer(f_source,f_cible)
 		print 'Chiffrage reussi en  ' + str(time() - avant) + 's'
 		print
 	except IOError:
-		print "Echec a l'ouverture de la clef ou du fichier source, veuiller recommencer."
+		print "Echec a l'ouverture de la clef ou du fichier source, veuillez recommencer."
 		print
 
 def decrypt():
@@ -40,12 +43,15 @@ def decrypt():
 	try:
 		#Chargement de la clef et decryptage
 		avant = time()
-		priv_key = clef().load(priv_key)
+		try:
+			priv_key = clef_correcteur().load(priv_key)
+		except:
+			priv_key = clef_privee().load(priv_key)
 		priv_key.dechiffrer(f_source,f_cible)
 		print 'Dechiffrage reussi en ' + str(time() - avant)+ 's'
 		print
 	except IOError:
-		print "Echec a l'ouverture de la clef ou du fichier source, veuiller recommencer."
+		print "Echec a l'ouverture de la clef ou du fichier source, veuillez recommencer."
 		print
 
 def new_keys():
@@ -91,7 +97,7 @@ while choix != 'q':
 	print "a : Crypter"
 	print "b : Decrypter"
 	print "c : Nouvelle paire de clefs, pour le cryptage"
-	print "d : Nouvelle clef juste pour créer un code correcteur"
+	print "d : Nouvelle clef juste pour creer un code correcteur"
 	print 'q : Quitter'
 	choix = raw_input("Que choisissez vous ? ").lower()
 

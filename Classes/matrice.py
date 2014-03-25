@@ -187,7 +187,7 @@ class matrice(arith):
 			j=i
 
 			#Recherche d'une ligne dont le coefficient i soit non nul
-			while j<n and M.tableau[n*j+i]==0: 
+			while j<n and M.tableau[n*j+i]==0:
 				j+=1
 
 			if M.nbligne!=M.nbcolonne:
@@ -324,7 +324,7 @@ class matrice(arith):
 				j=i
 
 				#Recherche d'une ligne dont le coefficient i soit non nul
-				while j<n and M.tableau[n*j+i]==0: 
+				while j<n and M.tableau[n*j+i]==0:
 					j+=1
 
 				#Si tous les coeff i sont nuls alors on on modifie la matrice initiale en ajoutant 1 en case [i,i]

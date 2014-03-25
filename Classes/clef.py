@@ -29,12 +29,9 @@ def bin2string(chaine,couper):
 		chaine = chaine[8::]
 	return message
 
-def file2blocbin(fichier,k):
-	"""Convertit un fichier texte en une liste de vecteurs d'elements de Z/2Z via Galois"""
+def string2blocbin(string,k):
+	"""Convertit un string en bloc de binaire"""
 
-	compteur = 0
-	with open(fichier,"rb") as f:
-		string = f.read()
 	chaine = string2bin(string)
 	liste = []
 	while chaine !='':
@@ -43,25 +40,38 @@ def file2blocbin(fichier,k):
 		vecteur =  []
 		for i in morceau:
 			vecteur.append(elt(int(i),2))
-			compteur +=1
 		vecteur = vecteur + [0 for i in range(k - len(vecteur))]
 		liste.append(matrice(k,1,vecteur))
 	return liste
 
-def blocbin2file(fichier,liste,couper):
-	"""Convertit une liste de vecteur en un fichier texte"""
+def file2blocbin(fichier,k):
+	"""Convertit un fichier texte en une liste de vecteurs d'elements de Z/2Z via Galois"""
+
+	with open(fichier,"rb") as f:
+		string = f.read()
+	return string2blocbin(string,k)
+
+def blocbin2string(liste,couper):
+	"""Convertit une liste de vecteurs en string"""
 
 	chaine = ''
-	compteur =0
 	for vecteur in liste:
 		for i in vecteur.tableau :
 			chaine += str(i)
 	string = bin2string(chaine,couper)
+	return string
+
+def blocbin2file(fichier,liste,couper):
+	"""Convertit une liste de vecteur en un fichier texte"""
+
+	string = blocbin2string(liste,couper)
 	with open(fichier,"wb") as f:
 		f.write(string)
 
+
 #Un ensemble de classes de clef reunissant les fonctions importantes du programme
 
+#Obsolete mais on la garde au cas ou.
 class clef(object):
 	"""Classe de clef dans le cyrptosysteme de Mc Eliece
 	Construit de objets sauvegardables dans des fichiers via pickle"""
@@ -90,6 +100,29 @@ class clef_publique(clef):
 		Gprime doit etre de taille n,k"""
 		self.Gprime = Gprime
 		self.correction=correction
+
+	def save(self,fichier):
+		"""Methode de sauvegarde d'une clef publique"""
+
+		string = ''
+		string += str(self.correction) + "1234567890"
+		string += str(self.Gprime.nbligne) + "1234567890"
+		string += str(self.Gprime.nbcolonne) + "1234567890"
+		string += blocbin2string([self.Gprime],False)
+		with open(fichier,'wb') as f:
+			f.write(string)
+
+	def load(self,fichier):
+		"""Methode de chargement d'une clef publique"""
+
+		with open(fichier,'rb') as f:
+			string = f.read()
+		liste = string.split("1234567890")
+		correction = int(liste[0])
+		n = int(liste[1])
+		k = int(liste[2])
+		Gprime = matrice(n,k,string2blocbin(liste[3],k*n)[0].tableau)
+		return clef_publique(Gprime,correction)
 
 	def chiffrer(self,f_source,f_cible):
 		"""Methode pour chiffrer le message
@@ -130,6 +163,60 @@ class clef_privee(clef):
 		self.L_fi = L_fi
 		self.mod = mod
 		self.correction = correction
+
+	def save(self,fichier):
+		"""Methode de sauvegarde d'une clef privee"""
+
+		string = ''
+		string += blocbin2string([self.G],False)+ "1234567890" #0
+		string += blocbin2string([self.P],False)+ "1234567890"
+		string += blocbin2string([self.D],False)+ "1234567890"
+		string += blocbin2string([self.Q],False)+ "1234567890"
+		string += blocbin2string([self.Qinv],False)+ "1234567890"
+		string += str(self.g.liste)+ "1234567890" #5
+		string += str(self.support)+ "1234567890"
+		#L_fi on le recalculera parce que c'est galere a stocker...
+		string += str(self.mod) + "1234567890"
+		string += str(self.correction)+ "1234567890"
+		string += str(self.G.nbligne)+ "1234567890" 
+		string += str(self.G.nbcolonne)+ "1234567890" #10
+		with open(fichier,'wb') as f:
+			f.write(string)
+
+	def load(self,fichier):
+		"""Methode de chargement d'une clef privee"""
+
+		with open(fichier,'rb') as f:
+			string = f.read()
+		liste = string.split("1234567890")
+
+		n = int(liste[9])
+		k = int(liste[10])
+		correction = int(liste[8])
+		mod = int(liste[7])
+
+		#Methode bizarre pour les listes, on enleve la tete, on retourne, on enleve la tete (queue initiale) et on remet dans le bon sens
+		#Ensuite on split car le string initial est '[1,2,3]'
+		gp =(((liste[5][1::])[::-1])[1::])[::-1].split(',')
+		g = []
+		for i in gp:
+			g.append(elt(int(i),mod))
+		g = polynome(g)
+
+		support = []
+		supportp = (((liste[6][1::])[::-1])[1::])[::-1].split(',')
+		for i in supportp:
+			support.append(elt(int(i),mod))
+
+		G = matrice(n,k,string2blocbin(liste[0],k*n)[0].tableau)
+		P = matrice(n,n,string2blocbin(liste[1],n*n)[0].tableau)
+		D = matrice(k,n,string2blocbin(liste[2],k*n)[0].tableau)
+		Q = matrice(k,k,string2blocbin(liste[3],k*k)[0].tableau)
+		Qinv = matrice(k,k,string2blocbin(liste[4],k*k)[0].tableau)
+
+		L_fi = fi(g,support,mod)
+
+		return clef_privee(G,P,D,Q,Qinv,g,support,L_fi,mod,correction)
 
 	def new(self,mod,correction):
 		"""Methode pour generer une clef privee aleatoire"""
@@ -230,6 +317,54 @@ class clef_correcteur(clef):
 		print "-G generee"
 		D = decodage(G)
 		print '-D generee'
+
+		return clef_correcteur(G,D,g,support,L_fi,mod,correction)
+
+	def save(self,fichier):
+		"""Methode de sauvegarde d'une clef goppa, l'indicage est le meme que pour la clef privee"""
+
+		string = ''
+		string += blocbin2string([self.G],False)+ "1234567890" #0
+		string += blocbin2string([self.D],False)+ "1234567890"
+		string += str(self.g.liste)+ "1234567890" 
+		string += str(self.support)+ "1234567890"
+		#L_fi on le recalculera parce que c'est galere a stocker...
+		string += str(self.mod) + "1234567890"
+		string += str(self.correction)+ "1234567890" #5
+		string += str(self.G.nbligne)+ "1234567890" 
+		string += str(self.G.nbcolonne)+ "1234567890"
+		with open(fichier,'wb') as f:
+			f.write(string)
+
+	def load(self,fichier):
+		"""Methode de chargement d'une clef goppa, l'indicage est le meme que pour la clef privee"""
+
+		with open(fichier,'rb') as f:
+			string = f.read()
+		liste = string.split("1234567890")
+
+		n = int(liste[6])
+		k = int(liste[7])
+		correction = int(liste[5])
+		mod = int(liste[4])
+
+		#Methode bizarre pour les listes, on enleve la tete, on retourne, on enleve la tete (queue initiale) et on remet dans le bon sens
+		#Ensuite on split car le string initial est '[1,2,3]'
+		gp =(((liste[2][1::])[::-1])[1::])[::-1].split(',')
+		g = []
+		for i in gp:
+			g.append(elt(int(i),mod))
+		g = polynome(g)
+
+		support = []
+		supportp = (((liste[3][1::])[::-1])[1::])[::-1].split(',')
+		for i in supportp:
+			support.append(elt(int(i),mod))
+
+		G = matrice(n,k,string2blocbin(liste[0],k*n)[0].tableau)
+		D = matrice(k,n,string2blocbin(liste[1],k*n)[0].tableau)
+
+		L_fi = fi(g,support,mod)
 
 		return clef_correcteur(G,D,g,support,L_fi,mod,correction)
 
