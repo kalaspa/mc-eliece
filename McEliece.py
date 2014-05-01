@@ -8,6 +8,7 @@ On se contentera pour l'instant d'un programme en console"""
 from Classes.clef import *
 from time import time
 
+
 #Constantes a utiliser
 correction = 4
 mod = 499# 1 + x + x**3 + x**6 + x**7
