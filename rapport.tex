@@ -32,7 +32,7 @@
 	La totalité des ressources est disponible ici : \url{https://github.com/kalaspa/mc-eliece}
 
 
-	\section*{Préliminaires}
+	\section{Préliminaires}
 
 		\subsection*{Codes correcteurs}
 			%def, principe
@@ -50,7 +50,7 @@
 			$$
 				t \leq \frac{d-1}{2}
 			$$
-			Dans la limite de cette capacité de correction, le syndrome d'un mot de $\mathbb{F}^{n}$ est caractéristique de l'erreur, ce qui permet la correction.
+			Dans la limite de cette capacité de correction, le syndrome $Hx$ d'un mot $x \in \mathbb{F}^{n}$ est caractéristique de l'erreur, ce qui permet la correction.
 
 		\subsection*{Outils informatiques}
 			% bibliothèques matrices, corps finis, polynômes
@@ -67,13 +67,14 @@
 			%Berlekamp-Hensel
 			Pour compléter le projet, nous avons implémenté les algorithmes de Gauss et de Berlekamp-Hensel.
 			En plus du calcul de l'inverse, le pivot de Gauss nous a servi à déterminer le noyau d'une matrice ou un inverse à gauche d'une matrice non carré.
-			Quant à l'algorithme de Berlekamp-Hensel, celui permet de vérifier l'irréductibilité d'un polynôme dans un corps fini.
+			L'algorithme de Berlekamp-Hensel permet de vérifier l'irréductibilité d'un polynôme dans un corps fini.
 			Étant donné qu'on doit en générer aléatoirement pour chaque clef, son usage était indispensable.
 
-	\section*{Codes de Goppa}
+	\section{Codes de Goppa}
 
 		\subsection*{Définition}
 			%Syndrome
+
 
 		\subsection*{Décodage}
 			%Équation clef
@@ -81,7 +82,7 @@
 		\subsection*{Implémentation}
 
 
-	\section*{Mc Eliece}
+	\section{Mc Eliece}
 
 		\subsection*{Principe}
 			%Clefs, codage, décodage
@@ -92,7 +93,9 @@
 		\subsection*{Mise en œuvre}
 			%Classe clef
 
-
+\appendix
+	
+	\section{Algorithme de Berlekamp-Hensel}
 
 
 
