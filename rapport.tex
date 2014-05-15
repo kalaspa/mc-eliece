@@ -89,7 +89,7 @@
 				\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = 0 \ mod \ g(x)
 			$$
 
-			Par un calcul donné en annexe \ref{parite}, on construit une matrice de parité H de ce code de Goppa.
+			Par un calcul donné en annexe \ref{parite}, on construit explicitement une matrice de parité H de ce code de Goppa.
 			Grâce au pivot de Gauss, nous avons déterminé le noyau de H pour construire une matrice génératrice d'un code de Goppa.
 			La capacité de correction est au moins égale à $\frac{t-1}{2}$.
 
@@ -109,7 +109,33 @@
 			Pour déterminer les racines du polynôme localisateur d'erreurs, étant donné quelles sont toutes simples, nous avons préféré évaluer ce polynôme de manière exhaustive plutôt que d'utiliser l'algorithme de Berlekamp-Hensel plus lourd.
 
 		\subsection*{Implémentation}
-			
+
+			Bien qu'avec cette définition, la construction de la matrice de parité soit explicite, aucune source ne montre comment former la matrice génératrice.
+			Nous avons donc utilisé le pivot de Gauss pour déterminer Ker(H) et construire une matrice G telle que Im(G) = Ker(H).
+
+			Pour ce faire, on utilise le pivot de Gauss pour transfomer avec des échanges de lignes et de colonnes H en H' telle que :
+			$$ H' = 
+			\begin{pmatrix}
+				U & V \\
+				W & Z
+			\end{pmatrix}
+			$$
+			Avec U carrée inversible de même rang r que H'.
+			Nous avons construit G' la matrice génératrice associée comme :
+			$$
+			\begin{pmatrix}
+				-U^{-1}V \\
+				I_{n-r}
+			\end{pmatrix}
+			$$
+			On obtient bien H'G' = 0 avec rang(G) = dim(Ker(H)).
+			En faisant cette transformation de H en H', on constate que $H' = LHC$, avec L les changements de lignes et C les changements de colonnes.
+			L et C sont inversibles.
+			On en déduit :
+			\begin{eqnarray*}
+				H'G' &=& LHCG' = 0
+				G = CG'
+			\end{eqnarray*}
 
 
 	\section{Mc Eliece}
