@@ -23,6 +23,10 @@
 \title{Codes correcteurs et cryptosystème de Mc Eliece}
 \author{Auclair Pierre}
 
+\newtheorem{prop}{Propriété}
+\newtheorem{algo}{Algorithme}
+\newtheorem{defi}{Définition}
+
 \begin{document}
 	\maketitle
 
@@ -176,17 +180,163 @@
 
 
 
-
+\newpage
 \appendix
+\part*{Annexe}
 	
 	\section{Algorithme de Berlekamp-Hensel}
 		\label{BH}
+		\cite{berlekamp}
+		Pour générer un code de Goppa aléatoire, il faut un polynôme de $ \mathbb{F}_{2^{m}}[X] $ de degré t irréductible.
+		Nous avons utilisé l'algorithme de Berlekamp pour tester l'irréductibilité d'un polynôme dans un corps fini.
+		Il est plus simple à démontrer que sa version utilisée pour factoriser ces polynômes.
+		Nous en donnons ici le principe et quelques morceaux de démonstration.
+
+		\begin{prop}
+			Soit $H \in \mathbb{F}_{2^{m}}[X]$, 
+			$$H^{2^{m}} - H = \prod_{c \in \mathbb{F}_{2^{m}-1}}(H-c)$$
+		\end{prop}
+		En effet,
+		$$ \forall c \in \mathbb{F}_{2^{m}}, H^{2^{m}}-H = H(H^{2^{m}-1}-1) = H(H^{2^{m}-1}-c^{2^{m}-1})$$
+		Une formule connue montre que H-c divise le polynôme de droite.
+		Comme les H-c sont premiers entre eux deux à deux et divisent $ H^{2^{m}} -H $, leur produit le divise.
+		L'égalité vient de l'égalité du degré et du premier coefficient.
+
+		Maintenant on veut tester l'irréductibilité d'un polynôme P unitaire sans facteur multiple.
+		\begin{prop}
+			Si $H \in \mathbb{F}_{2^{m}}[X]$ unitaire satisfait $H^{2^{m}} = H \ mod(P)$, alors 
+			$$P = \prod_{c\in \mathbb{F}_{2^{m}}}pgcd(P,H-c)$$
+		\end{prop}
+
+		Pour le montrer on utilise la propriété précédente.
+		P divise $H^{2^{m}} - H$ donc $P = pgcd(P,\prod(H-c))$.
+		Les H-c étant premiers entre eux deux à deux, P divise le produit des PGCD.
+		De plus chacun des $pgcd(P,H-c)$ divise P et ils sont premiers deux à deux donc leur produit divise P.
+		Les deux polynômes étant unitaires l'égalité est satisfaite.
+
+		On remarque que si $0<deg(H) <t$, pgcd(P,H-c) ne vaut jamais P, donc met en évidence que P n'est pas irréductible.
+		On en conclut donc que l'existence de H  de degré $\in 2..t-1$ implique que P est réductible.
+		Il reste à montrer l'équivalence.
+
+		\begin{prop}
+			Soit $P = P_{1} \times ... \times P_{r}$.
+			D'après le théorème des restes chinois, $H \rightarrow (H \ mod(P_{1}),...H \ mod(P_{r}))$ de $\mathbb{F}[X]/P \rightarrow (\mathbb{F}[X]/P_{1},...,\mathbb{F}[X]/P_{r})$ est un isomorphisme d'anneaux.
+
+			Comme les $P_{i}$ sont irréductibles, $\{x \in \mathbb{F}[X]/P_{1}/ x = x^{2{m}} \}$ est de cardinal $2^{m}$.
+			Donc il existe $2^{mr}$ polynômes de degrés inférieurs à t-1 vérifiant la propriété désirée.
+			Par suite si P est réductible il existe au moins un polynôme H avec $1 < deg(H) < t$ et $H^{2^{m}} = H \ mod(P)$.
+			On a donc l'équivalence voulue.
+		\end{prop}
+
+		Maintenant qu'on a une équivalence sympatique entre l'irréductibilité de P et la non existence du polynôme H, on utilise le morphisme de Frobenius.
+		C'est à dire que l'application suivante est linéaire.
+		\begin{eqnarray*}
+			\mathbb{F}_{2^{m}}/P &\rightarrow& \mathbb{F}_{2^{m}}/P \\
+			H &\rightarrow& H^{2^{m}}
+		\end{eqnarray*}
+
+		On en déduit l'algorithme suivant :
+		\begin{algo}
+			Soit P de degré t dont on veut tester l'irréductibilité :
+			\begin{enumerate}
+				\item Si $pgcd(P,P') \neq 0$ alors P possède des facteurs multiples, à fortiori P est réductible, on arrête l’exécution.
+				\item On calcule A la matrice du morphisme de Frobenius dans la base canonique
+				\item On détermine le noyau de (A - Id) dans la base canonique
+				\item Si $dim(Ker(A-Id)) = 1$ alors les seuls H existant sont de degré 1 et P est irréductible
+				\item Sinon P est réductible
+			\end{enumerate}
+		\end{algo}
 
 	\section{Construction de la matrice de parité}
 		\label{parite}
+		\cite{04cc}
+		Nous souhaiterions donner à notre code de Goppa défini par son syndrome une structure plus visiblement linéaire. Nous allons construire sa matrice de parité.
+
+		\begin{defi}
+			Nous allons définir une famille de polynômes  $ \mathbf{f}_{i} $  inverses des  $ (x-\alpha_{i}) $ . Cela est possible car g étant irréductible,  $ \mathbb{F}[X]/g $  est un corps :
+			 $$  \mathbf{f}_{i}(x)(x-\alpha_{i}) = 1 \ mod \ g(x) $$ 
+			On a donc que :
+			 $$ \forall y \in \mathbb{F}^{n} \ \mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = \sum_{i=1}^{n} \mathbf{f}_{i}(x)y_{i}  $$ 
+		\end{defi}
+
+		\begin{prop}
+			Évaluons les  $ \mathbf{f}_{i} $  sous forme de fraction rationnelle :
+			$$ \mathbf{f}_{i}(x) = \frac{1}{g(\alpha_{i})} \frac{g(x)-g(\alpha_{i})}{x-\alpha_{i}}  $$ 
+			Maintenant tentons de les rendre polynomiaux, pour cela utilisons une formule de factorisation bien connue  :
+			$$ x^{j} - \alpha_{i}^{j} = (x-\alpha_{i})\sum_{k=0}^{j-1} x^{k}\alpha_{i}^{j-1-k}$$
+			On en déduit donc que :
+			$$  \mathbf{f}_{i}(x) = \frac{1}{g(\alpha_{i})} \sum_{j=1}^{t} g_{j}\sum_{k=0}^{j-1} x^{k}\alpha_{i}^{j-1-k} 
+			= \frac{1}{g(\alpha_{i})} \sum_{k=0}^{t-1} x^{k}\sum_{j=k+1}^{t} g_{j}\alpha_{i}^{j-1-k}$$
+		\end{prop}
+
+		Maintenant qu'on a montré leur existence et qu'on les a calculés, nous utilisons les fi pour construire la matrice de parité.
+		Pour cela nous allons identifier un polynôme comme un vecteur de degré t.
+
+		\begin{defi}
+			On a donc des polynômes $(fi)_{1\leq i \leq n}$ de degrés t-1 que l'on va identifier comme des vecteurs colonnes de dimension t-1.
+			$$ \forall y \in \mathbb{F}^{n} \ \mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = \sum_{i=1}^{n} \mathbf{f}_{i}(x)y_{i}$$
+			$$ \forall y \in \mathbb{F}^{n} \  \mathbf{S}_{y}(x) =(f_{1}(x), ... , f_{n}(x))y $$
+			On se retrouve donc avec une matrice de calcul de syndrome :
+			$$ 
+			\begin{pmatrix}
+				\frac{1}{g(\alpha_{1})}g_{t} &  \frac{1}{g(\alpha_{2})}g_{t} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t} \\
+				\frac{1}{g(\alpha_{1})}(g_{t-1} + g_{t}\alpha_{1}) &  \frac{1}{g(\alpha_{2})}(g_{t-1} + g_{t}\alpha_{2}) & \cdots &  \frac{1}{g(\alpha_{n})}(g_{t-1} + g_{t}\alpha_{n}) \\
+				\vdots & \vdots & \vdots & \vdots\\
+				\frac{1}{g(\alpha_{1})}(g_{1} + ... +g_{t}\alpha_{1}^{t-1}) &  \frac{1}{g(\alpha_{2})}(g_{1} + ... +g_{t}\alpha_{1}^{t-1}) & \cdots &  \frac{1}{g(\alpha_{n})}(g_{1} + ... +g_{t}\alpha_{1}^{t-1}) \\
+			\end{pmatrix}
+			$$
+			Pour construire la matrice de parité, comme seul le noyau nous intéresse, nous allons simplifier cette matrice et poser H matrice de parité égale à :
+			$$
+			\begin{pmatrix}
+				\frac{1}{g(\alpha_{1})} &  \frac{1}{g(\alpha_{2})} & \cdots &  \frac{1}{g(\alpha_{n})} \\
+				\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}\\
+				\vdots & \vdots & \vdots & \vdots\\
+				\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1}^{t-1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2}^{t-1} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}^{t-1} \\
+			\end{pmatrix}
+			$$
+		\end{defi}
+
+		Maintenant que nous possédons sa matrice de parité, le codage est possible. 
+		La construction de G matrice génératrice de notre code de Goppa s'effectue simplement.
 
 	\section{Démonstration du décodage}
 		\label{eqclef}
+		La résolution de cette équation clef est la détermination de $\sigma$.
+		Pour cela il existe plusieurs techniques, nous étudierons celle utilisant l'algorithme d'Euclide.
+		L'algorithme d'Euclide étendu tel qu'utilisé est redonné plus tard.
+
+		\begin{prop} \label{unicite} \cite{goppa}
+			On a unicité de la résolution de l'équation clef pour les polynômes $\sigma$ et $\omega$ de degrés  $deg(\sigma) \leq \frac{t}{2}$ et $ deg(\omega) < \frac{t}{2} $ à un scalaire près.
+			On suppose de plus que les deux polynômes sont de degrés minimum, c'est à dire premiers entre eux.
+			En effet, soient $(\sigma_{1},\omega_{1})$ et $(\sigma_{2},\omega_{2})$ deux solutions de degrés inférieurs à $\frac{t}{2}$.
+			On a :
+			$$ \omega_{1}(x) = \sigma_{1}(x)\mathbf{S}_{y}(x) \ mod \ g(x) \ , \ \omega_{2}(x) = \sigma_{2}(x)\mathbf{S}_{y}(x) \ mod \ g(x) $$
+			$$ \omega_{1}(x)\sigma_{2}(x) = \sigma_{1}(x)\mathbf{S}_{y}(x)\sigma_{2}(x) \ mod \ g(x) \ , \ \omega_{2}(x)\sigma_{1}(x) = \sigma_{2}(x)\mathbf{S}_{y}(x)\sigma_{1}(x) \ mod \ g(x) $$
+			Ainsi :
+			$$ \omega_{1}(x)\sigma_{2}(x) - \omega_{2}(x)\sigma_{1}(x) = 0 \ mod \ g(x) $$
+			Or le degré du polynôme du membre de gauche est de degré $\leq t-1$.
+			Ce polynôme est donc nul et $ \omega_{1}(x)\sigma_{2}(x) = \omega_{2}(x)\sigma_{1}(x) $.
+			Avec l'hypothèse de degrés minimums, on a égalité des couples à un scalaire près.
+		\end{prop}
+
+		Il s'agit désormais d'expliciter un tel couple solution pour accéder au polynôme localisateur d'erreurs.
+		Pour cela nous utilisons l'algorithme d'Euclide étendu.
+
+		\begin{prop} \label{existence}
+			On définit des suites $(r_{n},s_{n},t_{n})$ telles que $ r_{n}(x) = s_{n}(x)\mathbf{S}_{y}(x) + t_{n}(x)g(x) $.
+			La relation de récurrence est donnée par l'algorithme d'Euclide étendu.
+			Comme les solutions de l'équation clef existent par construction, on sait que le PGCD de $g(x)$ et $\mathbf{S}_{y}(x)$ a un degré strictement inférieur à $\frac{t}{2}$.
+
+			Ainsi on sait que la suite des $r_{n}(x)$ a des degrés décroissants et $\exists s / deg(r_{s}(x)) < \frac{t}{2},$ avec $deg(r_{s-1}(x)) \geq \frac{t}{2}$.
+			Montrons que $deg(s_{s}(x)) \leq \frac{t}{2}$.
+			$$ s_{i+1}(x) = s_{i-1} - (r_{i-1}(x) \ div  \ r_{i}(x))s_{i}(x) $$
+			Donc :
+			$$ deg(s_{s}) = \sum_{i=2}^{s-1} deg(r_{i-1}(x) \ div  \ r_{i}(x)) = deg(r_{1}(x)) - deg(r_{s-1}(x)) \leq \frac{t}{2}$$
+		\end{prop}
+
+		L'algorithme d'Euclide étendu, stoppé au bon moment concernant les contraintes sur les degrés donne une solution particulière.
+		Grâce à l'unicité, nous avons déterminé le polynôme localisateur d'erreur dont la détermination des racines caractérise le vecteur d'erreur du message.
+		Pour cela nous utiliserons au choix, l'algorithme de Berlekamp-Hensel ou une recherche exhaustive.
 
 
 
