@@ -35,6 +35,7 @@
 	\section{Préliminaires}
 
 		\subsection*{Codes correcteurs}
+			\cite{04cc}
 			%def, principe
 			%Principe
 			Tout d'abord, définissons quelques notions des codes correcteurs.
@@ -67,36 +68,125 @@
 			%Berlekamp-Hensel
 			Pour compléter le projet, nous avons implémenté les algorithmes de Gauss et de Berlekamp-Hensel.
 			En plus du calcul de l'inverse, le pivot de Gauss nous a servi à déterminer le noyau d'une matrice ou un inverse à gauche d'une matrice non carré.
-			L'algorithme de Berlekamp-Hensel permet de vérifier l'irréductibilité d'un polynôme dans un corps fini.
+			L'algorithme de Berlekamp-Hensel \cite{berlekamp} permet de vérifier l'irréductibilité d'un polynôme dans un corps fini.
 			Étant donné qu'on doit en générer aléatoirement pour chaque clef, son usage était indispensable.
+			Vous le trouverez développé dans l'annexe \ref{BH}.
 
 	\section{Codes de Goppa}
 
 		\subsection*{Définition}
 			%Syndrome
+			Nous avons choisi une définition du code de Goppa à partir de son syndrome.
+			On identifie polynôme et vecteur.
+			Soit g un polynôme dans $\mathbb{F}_{2^{m}}[X]$ irréductible de degré t.
+			Soit L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}$ le support, on prendra $n = 2^{m}$.
+			Le syndrome d'un mot $y \in \mathbb{F}_{2}^{n}$ est défini par :
+			$$
+				\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = 0 \ mod \ g(x)
+			$$
+
+			Par un calcul donné en annexe \ref{parite}, on construit une matrice de parité H de ce code de Goppa.
+			Grâce au pivot de Gauss, nous avons déterminé le noyau de H pour construire une matrice génératrice d'un code de Goppa.
+			La capacité de correction est au moins égale à $\frac{t-1}{2}$.
 
 
 		\subsection*{Décodage}
 			%Équation clef
+			Nous avons défini les polynômes localisateur $\sigma$ et évaluateur $\omega$ d'erreurs pour un mot $y + \epsilon$ de $\mathbb{F}^{n}$ avec y mot de code.
+			\begin{eqnarray}
+				\sigma(x) &=& \prod \epsilon_{i}(x - \alpha_{i}) \\
+				\omega(x) &=& \sigma(x) \mathbf{S}_{\epsilon}(x) \ mod \ g(x)
+			\end{eqnarray}
+
+			La connaissance du polynôme localisateur d'erreur $\sigma$ et de ses racines permet la correction de l'erreur.
+			Pour cela, nous montrons dans l'annexe \ref{eqclef} l'unicité d'un couple $ (\sigma,\omega) $ solution de l'équation 2 appelée équation clef, avec des contraintes sur les degrés des polynômes.
+
+			Nous exhibons un tel couple solution avec l'algorithme d'Euclide étendu appliqué au couple $ (S_{y+\epsilon},g) $.
+			Pour déterminer les racines du polynôme localisateur d'erreurs, étant donné quelles sont toutes simples, nous avons préféré évaluer ce polynôme de manière exhaustive plutôt que d'utiliser l'algorithme de Berlekamp-Hensel plus lourd.
 
 		\subsection*{Implémentation}
+			
 
 
 	\section{Mc Eliece}
 
 		\subsection*{Principe}
 			%Clefs, codage, décodage
+			Le cryptosystème de Mc Eliece créé en 1978 est un des premiers cryptosystèmes asymétriques.
+			Le principe est similaire au RSA au sens où il y a une différence entre la clef publique permettant le cryptage et la clef privée permettant le décryptage.
+			Il est cependant le premier à utiliser des problèmes de la théorie des codes pour assurer la sécurité de l'information.
+
+			Pour mettre en place le cryptosystème, on commence par créer un code de Goppa avec les paramètres (g,L) aléatoires.
+			On en fabrique une matrice G génératrice de taille $n\times k$.
+			A cela on rajoute deux matrices aléatoires P permutation $n\times n$ et Q inversible $k \times k$.
+
+			Nous fabriquons la clef privée comme l'ensemble (g,L,P,Q,G).
+			Nous publions la clef publique (G' = PGQ, t= capacité de correction).
+
+			Soit $x\in \mathbb{F}^{k}$ le message à transmettre.
+			On crypte ce message avec la clef publique en calculant :
+			$$
+				y = G'x + \epsilon
+			$$
+			Avec $\epsilon$ erreur dans la limite de correction.
+
+			Pour décrypter ce message y, on calcule avec la clef privée :
+			$$
+				P^{-1}y = GQx + P^{-1}\epsilon
+			$$
+			Comme P est une matrice de permutation, l'erreur est toujours corrigeable.
+			Nous utilisons notre méthode efficace de décodage pour trouver $Qx$.
+			Connaissant Q inversible, on accède au message initial.
+
 
 		\subsection*{Sécurité}
-			 %Syndrome decoding et indistingabilité
+			 %Syndrome decoding et indistinguabilité
+			 L'intérêt de ce système de cryptage est qu'il repose sur des problèmes de théorie des codes.
+			 A l'heure actuelle, il existe des algorithmes qui sur des ordinateurs quantiques peuvent résoudre efficacement les problèmes de théorie des nombres sur lesquels s’appuie le RSA par exemple.
+			 Il n'existe pas encore de tels algorithmes pour la théorie des codes ce qui relance sont intérêt malgré la grande taille de ses clefs.
+
+			 Le premier problème utilisé est celui de Syndrome Decoding.
+			 Il consiste en la détermination de l'unique vecteur d'erreur associé à un syndrome donné d'un code linéaire aléatoire.
+			 Mc Eliece, Berlekamp et Van Tilborg ont prouvé l'équivalence du problème de décision associé au problème dit des trois mariages qui est NP-complet.
+			 Ce problème est donc bien NP-complet.
+
+			 Le second problème utilisé est celui de l'indistinguabilité d'un code de Goppa aléatoire.
+			 C'est à dire qu'il est difficile de distinguer un code de Goppa 'mélangé' PGQ d'un code code linéaire aléatoire.
+			 Il n'existe que des algorithmes exponentiels pour effectuer cette tache à ce jour.
 
 		\subsection*{Mise en œuvre}
 			%Classe clef
+			Dans notre programme, nous avons défini différentes classes clef\_privée et clef\_publique.
+			Ces classes contiennent les éléments et les méthodes nécessaires au cryptage ou au décryptage.
+			Nous les avons dotées de méthodes de sauvegarde et de chargement pour faciliter leur diffusion.
+			Notre premier choix a été d'utiliser le module Pickle de Python pour sauvegarder ces objets.
+			Cependant, convertir manuellement des matrices de nombres binaires en liste puis en caractères ASCII s'est avéré plus léger d'un facteur 1000.
+
+			Notre programme consiste en un script Python gérant indifféremment le cryptage, le décryptage des messages en prenant en argument les clefs utilisées.
+			Il permet aussi la génération des paires de clef.
+			Cependant, la totalité de ces opérations est contenue dans les classes de clef ce qui permet la réutilisation pratique des ces objets sans notre script d’interfaçage.
+
+	\section{Conclusion}
+
+		A la fin de l'année, nous disposons d'un programme fonctionnel mais trop lent pour répondre aux exigences de sécurité actuelles.
+		Les paramètres conseillés sont (n,k,t) = (1024,524,50), nous n'arrivons en temps raisonnable qu'à (n,k,t) = (256,100,5).
+		Ces limitations peuvent être dus à la nature interprétée de Python ou fait que nous n'avons pas utilisé les bibliothèques écrites en C et incluses dans Python.
+		Les opérations de multiplications et d'inversions d'aussi grandes matrices sont rédhibitoires et même l'implémentation de l'algorithme de Strassen pour la mutliplication ne suffit pas à atteindre les exigences de rapidité.
+
+
+
+
 
 \appendix
 	
 	\section{Algorithme de Berlekamp-Hensel}
+		\label{BH}
 
+	\section{Construction de la matrice de parité}
+		\label{parite}
+
+	\section{Démonstration du décodage}
+		\label{eqclef}
 
 
 
