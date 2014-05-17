@@ -3,6 +3,7 @@
 \usepackage[frenchb]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
 
 \usetheme{Singapore}
 
@@ -12,6 +13,7 @@
 \newtheorem{prop}{Propriété}
 \newtheorem{algo}{Algorithme}
 \newtheorem{defi}{Définition}
+\newtheorem{pb}{Problème}
 
 \begin{document}
 
@@ -26,34 +28,104 @@
 
 			\begin{frame}{Notations}
 
-
+				\begin{itemize}
+					\item $f \in L(\mathbb{F}^{k},\mathbb{F}^{n})$ avec k < n \\
+					\item $ G=Mat(f) $ matrice génératrice $n\times k$\\
+					\item $Ker(H) = Im(f)$ matrice de parité $k\times n$\\
+					\item $ S_{y} : y \in \mathbb{F}^{n} \rightarrow Hy \in \mathbb{F}^{k} $ syndrome \\
+					\item $ \omega : y \in \mathbb{F}^{n} \rightarrow Card( i / y_{i}\neq 0 ) $ poids de Hamming
+					\item d la distance minimale du code
+				\end{itemize}
 
 			\end{frame}
 
-		\subsection{Définitions}
+		\subsection{Définition}
 
-			\begin{frame}{Définitions}
-				
+			\begin{frame}{Définition}
+
+				\begin{itemize}
+					\item g polynôme de $ \mathbb{F}_{2^m}[X]$ irréductible
+					\item L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support
+				\end{itemize}
+
+				On définit un code de Goppa par son syndrome
+				$$\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} \ mod \ g(x)$$
+
+				En pratique on prendra $n = 2^{m}$
+
 			\end{frame}
 
 		\subsection{Matrice de parité}
 
 			\begin{frame}{Matrice de parité}
+
+				$$
+					\frac{1}{{x-\alpha_{i}}} = \frac{1}{g(\alpha_{i})} \sum_{k=0}^{t-1} x^{k}\sum_{j=k+1}^{t} g_{j}\alpha_{i}^{j-1-k}
+				$$
+				De là on déduit une expression d'une matrice de parité.
+				$$
+				\begin{pmatrix}
+					\frac{1}{g(\alpha_{1})} &  \frac{1}{g(\alpha_{2})} & \cdots &  \frac{1}{g(\alpha_{n})} \\
+					\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}\\
+					\vdots & \vdots & \vdots & \vdots\\
+					\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1}^{t-1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2}^{t-1} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}^{t-1} \\
+				\end{pmatrix}
+				$$
 						
-			\end{frame}		
+			\end{frame}
+
+		\subsection{Décodage}
+
+			\begin{frame}{Décodage}
+				Soit le polynôme localisateur d'erreurs $\sigma$
+				$$
+					\sigma_{y}(x) = \prod \epsilon_{i}(x-\alpha_{i})
+				$$
+				Il faut résoudre l'équation clef suivante :
+				$$
+					\omega_{y}(x) = S_{y}(x) \sigma_{y}(x) \ mod \ g
+				$$
+				On montre son unicité.
+				On explicite une solution avec l'algorithme d'Euclide étendu.
+			\end{frame}
 
 	\section{Mc Eliece}
+
+		\subsection{Clefs}
+
+			\begin{frame}{Clefs}
+				Clef privée
+				\begin{itemize}
+					\item G matrice génératrice, ainsi que L et g
+					\item P matrice de permutation $ n \times n$
+					\item Q $\in GL_{k}(\mathbb{F})$
+				\end{itemize}
+
+				Clef publique
+				\begin{itemize}
+					\item G' = PGQ
+					\item capacité de correction
+				\end{itemize}
+			
+			\end{frame}
 
 		\subsection{Principe}
 
 			\begin{frame}{Principe}
 				
-			\end{frame}
+				\begin{itemize}
+					\item $x \in \mathbb{F}^{k}$ le message a envoyer
+					\item $G'x + \epsilon = PGQx + \epsilon$ message envoyé
+					\item $ GQ + P^{-1}\epsilon$ peut être corrigé
+					\item Connaissant Q on déduit x le message initial
+				\end{itemize}
 
-		\subsection{Sécurité}
+				Sécurité par 2 problèmes de théorie des codes :
+				\begin{itemize}
+					\item Indistinguabilité d'un code de Goppa
+					\item Décodage par syndrome NP-complet
+				\end{itemize}
 
-			\begin{frame}{Sécurité}
-				
 			\end{frame}
 
 	\section{Mise en œuvre}
@@ -61,12 +133,28 @@
 		\subsection{POO}
 
 			\begin{frame}{Programmation Orientée objet}
-				
+				Rédaction de classes :
+				\begin{itemize}
+					\item Corps de galois $\mathbb{F}_{p^{m}}$
+					\item Optimisation en binaire pour p=2
+					\item Matrices
+					\item Polynomes
+					\item Clefs publiques et clefs privées
+				\end{itemize}
 			\end{frame}
 
 		\subsection{Berlekamp-Hensel}
 
 			\begin{frame}{Algorithme de Berlekamp-Hensel}
+
+				Teste l'irréductibilité de $ g \in \mathbb{F}_{2^{m}}[X] $
+				$$
+					\exists P / 1<deg(P)<deg(g) \ et \ P^{2^{m}} - P = 0 \ mod \ g \Leftrightarrow g \ reductible
+				$$
+				Par le morphisme de Frobenius, on regarde le noyau de l'application linéaire :
+				$$
+					P \leftarrow P^{2^{m}} - P
+				$$
 				
 			\end{frame}
 		
