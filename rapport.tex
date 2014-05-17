@@ -2,11 +2,11 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
-\usepackage[francais]{babel}
+\usepackage[frenchb]{babel}
 \usepackage{amsfonts} %permet d'utiliser mathbb
 \usepackage{amsthm} %permet d'utiliser \newtheorem*
  \usepackage{amsmath} %permet d'utiliser les matrices
-\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=black]{hyperref}
 \usepackage{listings}
 \usepackage{url}
 
@@ -36,9 +36,9 @@
 	La totalité des ressources est disponible ici : \url{https://github.com/kalaspa/mc-eliece}
 
 
-	\section{Préliminaires}
+	\part*{Préliminaires}
 
-		\subsection*{Codes correcteurs}
+		\section*{Codes correcteurs}
 			\cite{04cc}
 			%def, principe
 			%Principe
@@ -57,7 +57,7 @@
 			$$
 			Dans la limite de cette capacité de correction, le syndrome $Hx$ d'un mot $x \in \mathbb{F}^{n}$ est caractéristique de l'erreur, ce qui permet la correction.
 
-		\subsection*{Outils informatiques}
+		\section*{Outils informatiques}
 			% bibliothèques matrices, corps finis, polynômes
 			Pour démarrer le projet, il a fallu développer des modules pour utiliser des matrices et des polynômes sur des corps finis.
 			Pour cela, nous avons utilisé la programmation orientée objet et la surcharge des opérateurs permise par Python.
@@ -67,23 +67,24 @@
 			Ainsi, un élément de $\mathbb{F}_{2^{m}}$ équivalent à un polynôme dans $\mathbb{F}_{2}[X]/P$ peut être stocké comme un nombre en base binaire.
 			Les opérations sur ces éléments deviennent des opérations binaires beaucoup plus rapides que l'implémentation plus mathématique.
 
-		\subsection*{Algorithmes supplémentaires}
+		\section*{Algorithmes supplémentaires}
 			%Gauss
 			%Berlekamp-Hensel
 			Pour compléter le projet, nous avons implémenté les algorithmes de Gauss et de Berlekamp-Hensel.
-			En plus du calcul de l'inverse, le pivot de Gauss nous a servi à déterminer le noyau d'une matrice ou un inverse à gauche d'une matrice non carré.
+			En plus du calcul de l'inverse, le pivot de Gauss nous a servi à déterminer le noyau d'une matrice ou un inverse à gauche d'une matrice non carrée.
 			L'algorithme de Berlekamp-Hensel \cite{berlekamp} permet de vérifier l'irréductibilité d'un polynôme dans un corps fini.
 			Étant donné qu'on doit en générer aléatoirement pour chaque clef, son usage était indispensable.
 			Vous le trouverez développé dans l'annexe \ref{BH}.
 
-	\section{Codes de Goppa}
+	\part*{Codes de Goppa}
 
-		\subsection*{Définition}
+		\section*{Définition}
 			%Syndrome
+			\cite{finiasz}
 			Nous avons choisi une définition du code de Goppa à partir de son syndrome.
 			On identifie polynôme et vecteur.
 			Soit g un polynôme dans $\mathbb{F}_{2^{m}}[X]$ irréductible de degré t.
-			Soit L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}$ le support, on prendra $n = 2^{m}$.
+			Soit L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support, en pratique nous prendrons $n = 2^{m}$.
 			Le syndrome d'un mot $y \in \mathbb{F}_{2}^{n}$ est défini par :
 			$$
 				\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = 0 \ mod \ g(x)
@@ -94,7 +95,7 @@
 			La capacité de correction est au moins égale à $\frac{t-1}{2}$.
 
 
-		\subsection*{Décodage}
+		\section*{Décodage}
 			%Équation clef
 			Nous avons défini les polynômes localisateur $\sigma$ et évaluateur $\omega$ d'erreurs pour un mot $y + \epsilon$ de $\mathbb{F}^{n}$ avec y mot de code.
 			\begin{eqnarray}
@@ -103,17 +104,17 @@
 			\end{eqnarray}
 
 			La connaissance du polynôme localisateur d'erreur $\sigma$ et de ses racines permet la correction de l'erreur.
-			Pour cela, nous montrons dans l'annexe \ref{eqclef} l'unicité d'un couple $ (\sigma,\omega) $ solution de l'équation 2 appelée équation clef, avec des contraintes sur les degrés des polynômes.
+			Pour déterminer ces polynômes, nous montrons dans l'annexe \ref{eqclef} l'unicité d'un couple $ (\sigma,\omega) $ solution de l'équation 2 appelée équation clef, avec des contraintes sur les degrés des polynômes.
 
 			Nous exhibons un tel couple solution avec l'algorithme d'Euclide étendu appliqué au couple $ (S_{y+\epsilon},g) $.
 			Pour déterminer les racines du polynôme localisateur d'erreurs, étant donné quelles sont toutes simples, nous avons préféré évaluer ce polynôme de manière exhaustive plutôt que d'utiliser l'algorithme de Berlekamp-Hensel plus lourd.
 
-		\subsection*{Implémentation}
+		\section*{Implémentation}
 
 			Bien qu'avec cette définition, la construction de la matrice de parité soit explicite, aucune source ne montre comment former la matrice génératrice.
 			Nous avons donc utilisé le pivot de Gauss pour déterminer Ker(H) et construire une matrice G telle que Im(G) = Ker(H).
 
-			Pour ce faire, on utilise le pivot de Gauss pour transfomer avec des échanges de lignes et de colonnes H en H' telle que :
+			Pour ce faire, nous avons utilisé le pivot de Gauss pour transfomer avec des échanges de lignes et de colonnes H en H' telle que :
 			$$ H' = 
 			\begin{pmatrix}
 				U & V \\
@@ -133,14 +134,14 @@
 			L et C sont inversibles.
 			On en déduit :
 			\begin{eqnarray*}
-				H'G' &=& LHCG' = 0
-				G = CG'
+				H'G' &=& LHCG' = 0\\
+				G &=& CG'
 			\end{eqnarray*}
 
 
-	\section{Mc Eliece}
+	\part*{Mc Eliece}
 
-		\subsection*{Principe}
+		\section*{Principe}
 			%Clefs, codage, décodage
 			Le cryptosystème de Mc Eliece créé en 1978 est un des premiers cryptosystèmes asymétriques.
 			Le principe est similaire au RSA au sens où il y a une différence entre la clef publique permettant le cryptage et la clef privée permettant le décryptage.
@@ -169,11 +170,12 @@
 			Connaissant Q inversible, on accède au message initial.
 
 
-		\subsection*{Sécurité}
+		\section*{Sécurité}
 			 %Syndrome decoding et indistinguabilité
+			 \cite{veron}
 			 L'intérêt de ce système de cryptage est qu'il repose sur des problèmes de théorie des codes.
 			 A l'heure actuelle, il existe des algorithmes qui sur des ordinateurs quantiques peuvent résoudre efficacement les problèmes de théorie des nombres sur lesquels s’appuie le RSA par exemple.
-			 Il n'existe pas encore de tels algorithmes pour la théorie des codes ce qui relance sont intérêt malgré la grande taille de ses clefs.
+			 Il n'existe pas encore de tels algorithmes pour la théorie des codes ce qui relance son intérêt malgré la grande taille de ses clefs.
 
 			 Le premier problème utilisé est celui de Syndrome Decoding.
 			 Il consiste en la détermination de l'unique vecteur d'erreur associé à un syndrome donné d'un code linéaire aléatoire.
@@ -184,7 +186,7 @@
 			 C'est à dire qu'il est difficile de distinguer un code de Goppa 'mélangé' PGQ d'un code code linéaire aléatoire.
 			 Il n'existe que des algorithmes exponentiels pour effectuer cette tache à ce jour.
 
-		\subsection*{Mise en œuvre}
+		\section*{Mise en œuvre}
 			%Classe clef
 			Dans notre programme, nous avons défini différentes classes clef\_privée et clef\_publique.
 			Ces classes contiennent les éléments et les méthodes nécessaires au cryptage ou au décryptage.
@@ -196,11 +198,11 @@
 			Il permet aussi la génération des paires de clef.
 			Cependant, la totalité de ces opérations est contenue dans les classes de clef ce qui permet la réutilisation pratique des ces objets sans notre script d’interfaçage.
 
-	\section{Conclusion}
+	\part*{Conclusion}
 
 		A la fin de l'année, nous disposons d'un programme fonctionnel mais trop lent pour répondre aux exigences de sécurité actuelles.
 		Les paramètres conseillés sont (n,k,t) = (1024,524,50), nous n'arrivons en temps raisonnable qu'à (n,k,t) = (256,100,5).
-		Ces limitations peuvent être dus à la nature interprétée de Python ou fait que nous n'avons pas utilisé les bibliothèques écrites en C et incluses dans Python.
+		Ces limitations peuvent être dues à la nature interprétée de Python ou au fait que nous n'avons pas utilisé les bibliothèques écrites en C et incluses dans Python.
 		Les opérations de multiplications et d'inversions d'aussi grandes matrices sont rédhibitoires et même l'implémentation de l'algorithme de Strassen pour la mutliplication ne suffit pas à atteindre les exigences de rapidité.
 
 
@@ -208,7 +210,7 @@
 
 \newpage
 \appendix
-\part*{Annexe}
+\part*{Annexes}
 	
 	\section{Algorithme de Berlekamp-Hensel}
 		\label{BH}
