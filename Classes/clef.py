@@ -2,7 +2,7 @@
 #!/usr/bin/python3.2
 """Fichier contenanr les classes de clefs publiques et privées"""
 
-
+import numpy as np
 import pickle
 from matrice import *
 from galois import *
@@ -40,7 +40,7 @@ def string2blocbin(string,k):
 		vecteur =  []
 		for i in morceau:
 			vecteur.append(elt(int(i),2))
-		vecteur = vecteur + [0 for i in range(k - len(vecteur))]
+		vecteur = vecteur + [elt(0,2) for i in range(k - len(vecteur))]
 		liste.append(matrice(k,1,vecteur))
 	return liste
 
@@ -128,27 +128,36 @@ class clef_publique(clef):
 		"""Methode pour chiffrer le message
 		Reste a savoir comment on se forme le message : liste de vecteurs"""
 		
+		#Modif, on convertit tout vers Numpy
+		G = me2np(self.Gprime)
+
 		message = file2blocbin(f_source,self.Gprime.nbcolonne)
 		resultat = []
-		for vecteur in message:
-			erreur = [0 for i in range(self.Gprime.nbligne)]
+		for i in message:
+			vecteur = me2np(i)
+			erreur = [elt(0,2) for i in range(self.Gprime.nbligne)]
 			for i in range(self.correction):
 				erreur[randint(0,self.Gprime.nbligne-1)]=elt(1,2)
-			erreur = matrice(self.Gprime.nbligne,1,erreur)
-			resultat.append((self.Gprime * vecteur) + erreur)
+			erreur = me2np(matrice(self.Gprime.nbligne,1,erreur))
+			resultat.append(np2me((G.dot(vecteur) ^ erreur)))
 		blocbin2file(f_cible,resultat,False)
 
 	def new(self,privkey):
 		"""Methode pour creer une clef publique a partir d'une clef publique"""
 
-		return clef_publique(privkey.P * (privkey.G* privkey.Q),privkey.correction)
+		#Modif, on convertit tout vers Numpy
+		P = me2np(privkey.P)
+		Q = me2np(privkey.Q)
+		G = me2np(privkey.G)
+
+		return clef_publique(np2me(P.dot(G.dot(Q))),privkey.correction)
 		
 
 class clef_privee(clef):
 	"""Classe de clef privee du cryptosysteme de Mc Eliece
 	Permet le dechiffrage et la generation du code"""
 
-	def __init__(self,G=0,P=0,D=0,Q=0,Qinv=0,g=0,support=0,L_fi=0,mod = 0,correction=0):
+	def __init__(self,G=0,P=0,D=0,Q=0,g=0,support=0,L_fi=0,mod = 0,correction=0):
 		"""Methode d'initialisation de la clef privee
 		G de taille n,k
 		P permutation de taille n,n
@@ -157,7 +166,7 @@ class clef_privee(clef):
 		self.P = P
 		self.D = D
 		self.Q = Q
-		self.Qinv=Qinv
+		#self.Qinv=Qinv
 		self.g = g
 		self.support = support
 		self.L_fi = L_fi
@@ -172,7 +181,7 @@ class clef_privee(clef):
 		string += blocbin2string([self.P],False)+ "1234567890"
 		string += blocbin2string([self.D],False)+ "1234567890"
 		string += blocbin2string([self.Q],False)+ "1234567890"
-		string += blocbin2string([self.Qinv],False)+ "1234567890"
+		#string += blocbin2string([self.Qinv],False)+ "1234567890"
 		string += str(self.g.liste)+ "1234567890" #5
 		string += str(self.support)+ "1234567890"
 		#L_fi on le recalculera parce que c'est galere a stocker...
@@ -190,21 +199,21 @@ class clef_privee(clef):
 			string = f.read()
 		liste = string.split("1234567890")
 
-		n = int(liste[9])
-		k = int(liste[10])
-		correction = int(liste[8])
-		mod = int(liste[7])
+		n = int(liste[8])
+		k = int(liste[9])
+		correction = int(liste[7])
+		mod = int(liste[6])
 
 		#Methode bizarre pour les listes, on enleve la tete, on retourne, on enleve la tete (queue initiale) et on remet dans le bon sens
 		#Ensuite on split car le string initial est '[1,2,3]'
-		gp =(((liste[5][1::])[::-1])[1::])[::-1].split(',')
+		gp =(((liste[4][1::])[::-1])[1::])[::-1].split(',')
 		g = []
 		for i in gp:
 			g.append(elt(int(i),mod))
 		g = polynome(g)
 
 		support = []
-		supportp = (((liste[6][1::])[::-1])[1::])[::-1].split(',')
+		supportp = (((liste[5][1::])[::-1])[1::])[::-1].split(',')
 		for i in supportp:
 			support.append(elt(int(i),mod))
 
@@ -216,7 +225,7 @@ class clef_privee(clef):
 
 		L_fi = fi(g,support,mod)
 
-		return clef_privee(G,P,D,Q,Qinv,g,support,L_fi,mod,correction)
+		return clef_privee(G,P,D,Q,g,support,L_fi,mod,correction)
 
 	def new(self,mod,correction):
 		"""Methode pour generer une clef privee aleatoire"""
@@ -248,10 +257,8 @@ class clef_privee(clef):
 		print "-P generee"
 		Q = inversible(G.nbcolonne)
 		print '-Q generee'
-		Qinv = Q.inverse()
-		print "-Q inverse calculee"
 
-		return clef_privee(G,P,D,Q,Qinv,g,support,L_fi,mod,correction)
+		return clef_privee(G,P,D,Q,g,support,L_fi,mod,correction)
 
 	def dechiffrer(self,f_source,f_cible):
 		"""Methode pour dechiffrer un fichier code avec la bonne clef"""
@@ -260,8 +267,11 @@ class clef_privee(clef):
 		liste = file2blocbin(f_source,self.G.nbligne)
 
 		print "-Inversion des matrices de la clef privee"
-		Per = self.P.transpose()
-		Qinv = self.Qinv
+		#Per = self.P.transpose()
+		#Qinv = self.Qinv
+		Per = me2np(self.P).getT()
+		Qinv = me2np(self.Q).getI()
+		D = me2np(self.D)
 		
 		#On calcule Per * mot comme le dit Mc Eliece
 		#On corrige les fautes
@@ -269,12 +279,13 @@ class clef_privee(clef):
 		#Enfin on passe le tout a la matrice de decodage pour retrouver le mot de Fk
 		print "-Decodage des blocs de bits"
 		resultat = []
-		for mot in liste:
-			mot = Per * mot
-			mot = corrige(self.g,mot,self.support,self.L_fi,self.mod)
-			mot = self.D * mot
-			mot  = Qinv * mot
-			resultat.append(mot)
+		for i in liste:
+			mot = me2np(i)
+			mot = Per.dot(mot)
+			mot = me2np(corrige(self.g,np2me(mot),self.support,self.L_fi,self.mod))
+			mot = D.dot(mot)
+			mot  = Qinv.dot(mot)
+			resultat.append(np2me(mot))
 
 
 		print "-Inscription du message dans le fichier source"

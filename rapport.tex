@@ -43,8 +43,9 @@
 			%def, principe
 			%Principe
 			Tout d'abord, définissons quelques notions des codes correcteurs.
-			Un code correcteur est l'image C d'une application linéaire f de $\mathbb{F}^{k}$ vers $\mathbb{F}^{n}$.
-			On définit, avec les conventions du cours de mathématiques, les matrices génératrices G et de parité H :
+			$\mathbb{F}$ désigne un corps fini.
+			Un code correcteur est l'image C d'une application linéaire injective f de $\mathbb{F}^{k}$ vers $\mathbb{F}^{n}$.
+			On définit, avec les conventions du cours de mathématiques, les matrices génératrices $G \in M_{n,k}(\mathbb{F})$ et de parité $H\in M_{k,n}(\mathbb{F})$ :
 			\begin{eqnarray*}
 				G &=& Mat(f) \\
 				Ker(H) &=& Im(f)
@@ -64,7 +65,8 @@
 			Nous avions ainsi des classes de polynômes et de matrices à coefficients aussi bien réels que de $\mathbb{F}_{p^{m}}$.
 
 			Une optimisation que nous avons trouvé consiste à considérer uniquement le cas $p = 2$.
-			Ainsi, un élément de $\mathbb{F}_{2^{m}}$ équivalent à un polynôme dans $\mathbb{F}_{2}[X]/P$ peut être stocké comme un nombre en base binaire.
+			Un élément de $\mathbb{F}_{2^{m}}$ est identifié à la classe d'un polynôme dans $\mathbb{F}_{2}[X]/P$ avec P irréductible.
+			Nous stockons cet élément comme un entier en base binaire.
 			Les opérations sur ces éléments deviennent des opérations binaires beaucoup plus rapides que l'implémentation plus mathématique.
 
 		\section*{Algorithmes supplémentaires}
@@ -215,7 +217,7 @@
 	\section{Algorithme de Berlekamp-Hensel}
 		\label{BH}
 		\cite{berlekamp}
-		Pour générer un code de Goppa aléatoire, il faut un polynôme de $ \mathbb{F}_{2^{m}}[X] $ de degré t irréductible.
+		Pour générer un code de Goppa aléatoire, il faut un polynôme de $g \mathbb{F}_{2^{m}}[X] $ de degré t irréductible.
 		Nous avons utilisé l'algorithme de Berlekamp pour tester l'irréductibilité d'un polynôme dans un corps fini.
 		Il est plus simple à démontrer que sa version utilisée pour factoriser ces polynômes.
 		Nous en donnons ici le principe et quelques morceaux de démonstration.
@@ -230,36 +232,36 @@
 		Comme les H-c sont premiers entre eux deux à deux et divisent $ H^{2^{m}} -H $, leur produit le divise.
 		L'égalité vient de l'égalité du degré et du premier coefficient.
 
-		Maintenant on veut tester l'irréductibilité d'un polynôme P unitaire sans facteur multiple.
+		Maintenant on veut tester l'irréductibilité d'un polynôme g unitaire sans facteur multiple.
 		\begin{prop}
-			Si $H \in \mathbb{F}_{2^{m}}[X]$ unitaire satisfait $H^{2^{m}} = H \ mod(P)$, alors 
-			$$P = \prod_{c\in \mathbb{F}_{2^{m}}}pgcd(P,H-c)$$
+			Si $H \in \mathbb{F}_{2^{m}}[X]$ unitaire satisfait $H^{2^{m}} = H \ mod(g)$, alors 
+			$$g = \prod_{c\in \mathbb{F}_{2^{m}}}pgcd(g,H-c)$$
 		\end{prop}
 
 		Pour le montrer on utilise la propriété précédente.
-		P divise $H^{2^{m}} - H$ donc $P = pgcd(P,\prod(H-c))$.
-		Les H-c étant premiers entre eux deux à deux, P divise le produit des PGCD.
-		De plus chacun des $pgcd(P,H-c)$ divise P et ils sont premiers deux à deux donc leur produit divise P.
+		g divise $H^{2^{m}} - H$ donc $g = pgcd(g,\prod(H-c))$.
+		Les H-c étant premiers entre eux deux à deux, g divise le produit des PGCD.
+		De plus chacun des $pgcd(g,H-c)$ divise g et ils sont premiers deux à deux donc leur produit divise g.
 		Les deux polynômes étant unitaires l'égalité est satisfaite.
 
-		On remarque que si $0<deg(H) <t$, pgcd(P,H-c) ne vaut jamais P, donc met en évidence que P n'est pas irréductible.
-		On en conclut donc que l'existence de H  de degré $\in 2..t-1$ implique que P est réductible.
+		On remarque que si $0<deg(H) <t$, pgcd(g,H-c) ne vaut jamais g, donc met en évidence que g n'est pas irréductible.
+		On en conclut donc que l'existence de H  de degré $\in 2..t-1$ implique que g est réductible.
 		Il reste à montrer l'équivalence.
 
 		\begin{prop}
-			Soit $P = P_{1} \times ... \times P_{r}$.
-			D'après le théorème des restes chinois, $H \rightarrow (H \ mod(P_{1}),...H \ mod(P_{r}))$ de $\mathbb{F}[X]/P \rightarrow (\mathbb{F}[X]/P_{1},...,\mathbb{F}[X]/P_{r})$ est un isomorphisme d'anneaux.
-
-			Comme les $P_{i}$ sont irréductibles, $\{x \in \mathbb{F}[X]/P_{1}/ x = x^{2{m}} \}$ est de cardinal $2^{m}$.
-			Donc il existe $2^{mr}$ polynômes de degrés inférieurs à t-1 vérifiant la propriété désirée.
-			Par suite si P est réductible il existe au moins un polynôme H avec $1 < deg(H) < t$ et $H^{2^{m}} = H \ mod(P)$.
-			On a donc l'équivalence voulue.
+			Soit $g = g_{1} \times ... \times g_{r}$.
+			D'après le théorème des restes chinois, $H \rightarrow (H \ mod(g_{1}),...H \ mod(g_{r}))$ de $\mathbb{F}[X]/g \rightarrow (\mathbb{F}[X]/g_{1},...,\mathbb{F}[X]/g_{r})$ est un isomorphisme d'anneaux.
 		\end{prop}
 
-		Maintenant qu'on a une équivalence sympatique entre l'irréductibilité de P et la non existence du polynôme H, on utilise le morphisme de Frobenius.
+		Comme les $g_{i}$ sont irréductibles, $\{x \in \mathbb{F}[X]/g_{1}, x = x^{2^{m}} \}$ est de cardinal $2^{m}$.
+		Donc il existe $2^{mr}$ polynômes de degrés inférieurs à t-1 vérifiant la propriété désirée.
+		Par suite si $g$ est réductible il existe au moins un polynôme H avec $1 < deg(H) < t$ et $H^{2^{m}} = H \ mod(g)$.
+		On a donc l'équivalence voulue.
+
+		Maintenant qu'on a une équivalence sympatique entre l'irréductibilité de $g$ et la non existence du polynôme H, on utilise le morphisme de Frobenius.
 		C'est à dire que l'application suivante est linéaire.
 		\begin{eqnarray*}
-			\mathbb{F}_{2^{m}}/P &\rightarrow& \mathbb{F}_{2^{m}}/P \\
+			\mathbb{F}_{2^{m}}[X]/g &\rightarrow& \mathbb{F}_{2^{m}}[X]/g \\
 			H &\rightarrow& H^{2^{m}}
 		\end{eqnarray*}
 
@@ -267,11 +269,11 @@
 		\begin{algo}
 			Soit P de degré t dont on veut tester l'irréductibilité :
 			\begin{enumerate}
-				\item Si $pgcd(P,P') \neq 0$ alors P possède des facteurs multiples, à fortiori P est réductible, on arrête l’exécution.
+				\item Si $pgcd(g,g') \neq 0$ alors $g$ possède des facteurs multiples, à fortiori $g$ est réductible, on arrête l’exécution.
 				\item On calcule A la matrice du morphisme de Frobenius dans la base canonique
 				\item On détermine le noyau de (A - Id) dans la base canonique
-				\item Si $dim(Ker(A-Id)) = 1$ alors les seuls H existant sont de degré 1 et P est irréductible
-				\item Sinon P est réductible
+				\item Si $dim(Ker(A-Id)) = 1$ alors les seuls H existant sont de degré 1 et $g$ est irréductible
+				\item Sinon $g$ est réductible
 			\end{enumerate}
 		\end{algo}
 
@@ -329,14 +331,13 @@
 
 	\section{Démonstration du décodage}
 		\label{eqclef}
-		La résolution de cette équation clef est la détermination de $\sigma$.
+		La clef du décodage est la résolution de l'équation clef 2.
 		Pour cela il existe plusieurs techniques, nous étudierons celle utilisant l'algorithme d'Euclide.
 		L'algorithme d'Euclide étendu tel qu'utilisé est redonné plus tard.
 
 		\begin{prop} \label{unicite} \cite{goppa}
-			On a unicité de la résolution de l'équation clef pour les polynômes $\sigma$ et $\omega$ de degrés  $deg(\sigma) \leq \frac{t}{2}$ et $ deg(\omega) < \frac{t}{2} $ à un scalaire près.
-			On suppose de plus que les deux polynômes sont de degrés minimum, c'est à dire premiers entre eux.
-			En effet, soient $(\sigma_{1},\omega_{1})$ et $(\sigma_{2},\omega_{2})$ deux solutions de degrés inférieurs à $\frac{t}{2}$.
+			On a unicité de la résolution de l'équation clef pour les polynômes $\sigma$ et $\omega$ premiers entre eux de degrés  $deg(\sigma) \leq \frac{t}{2}$ et $ deg(\omega) < \frac{t}{2} $ à un scalaire près.=
+			En effet, soient $(\sigma_{1},\omega_{1})$ et $(\sigma_{2},\omega_{2})$ deux solutions de degrés respéctivement inférieur et strictement inférieur à $\frac{t}{2}$.
 			On a :
 			$$ \omega_{1}(x) = \sigma_{1}(x)\mathbf{S}_{y}(x) \ mod \ g(x) \ , \ \omega_{2}(x) = \sigma_{2}(x)\mathbf{S}_{y}(x) \ mod \ g(x) $$
 			$$ \omega_{1}(x)\sigma_{2}(x) = \sigma_{1}(x)\mathbf{S}_{y}(x)\sigma_{2}(x) \ mod \ g(x) \ , \ \omega_{2}(x)\sigma_{1}(x) = \sigma_{2}(x)\mathbf{S}_{y}(x)\sigma_{1}(x) \ mod \ g(x) $$

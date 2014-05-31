@@ -5,6 +5,7 @@
 from galois import *
 from random import *
 from arith import *
+import numpy as np
 
 class matrice(arith):
 	"""Classe definissant l'element matrice en Python"""
@@ -355,6 +356,26 @@ class matrice(arith):
 		else :
 			print "On n'inverse que des matrices carrees"
 
+def me2np(self):
+	"""Convertit notre belle matrice vers Numpy si elle est binaire"""
+	trans = []
+	for i in range(self.nbligne):
+			trans.append([c.valeur for c in self.tableau[i*self.nbcolonne:(i+1)*self.nbcolonne:] ])
+	return np.matrix(trans,dtype=bool)
+
+def np2me(self):
+	trans = self.getA1()
+	ligne,colonne = np.shape(self)
+
+	resultat = []
+	for i in trans:
+		if i :
+			resultat.append(elt(1,2))
+		else:
+			resultat.append(elt(0,2))
+	return matrice(ligne,colonne,resultat)
+
+
 def M_coller(C1,C2,C3,C4):
 	"""Methode pour coller des blocs sur une matrice"""
 	taille = C1.nbligne
@@ -409,3 +430,5 @@ def strassen(A,B):
 		return M_coller(C1,C2,C3,C4)
 	else:
 		return A*B
+
+A = matrice(3,3,[1,0,0,0,1,0,0,1,1]).MtoGalois(2)

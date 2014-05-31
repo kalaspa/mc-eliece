@@ -100,7 +100,8 @@ def generatrice(parite):
 	#On decompose M en produit par bloc U,V puis W,Z avec U carre inversible de dim rang
 	U = M.bloc(1,1,rang,rang)
 	V = M.bloc(1,rang+1,rang,M.nbcolonne)
-	Uinv=U.inverse()
+	#Uinv=U.inverse()
+	Uinv = np2me(me2np(U).getI())
 	
 	#On a K de dim n dans le noyau, on le decompose en X,Y de dim resp rang, nbcolonne - rang
 	#La relation fondamentale est X = - U^-1VY
@@ -134,7 +135,8 @@ def decodage(generatrice):
 
 	#On decompose G' en U,V avec U k,k et V n-k,k bien qu on ne se preoccupe pas de V
 	U = M.bloc(1,1,rang,rang)
-	Uinv = U.inverse()
+	#Uinv = U.inverse()
+	Uinv = np2me(me2np(U).getI())
 
 	#La matrice D' de decodage est de taille k,n et composée d'abord de Uinv
 	tab = Uinv.transpose().tableau
