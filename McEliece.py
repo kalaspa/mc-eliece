@@ -5,7 +5,7 @@ On se contentera pour l'instant d'un programme en console"""
 
 #Tailles suggerees par McEliece : n = 1024, k = 524, t = 50
 
-from Classes.clef import *
+from src.clef import *
 from time import time
 
 
@@ -82,25 +82,26 @@ def new_key():
 	cor_key.save(f_cor)
 	print "Clefs imprimees"
 
-print "*--------------------*"
-print "| TIPE sur Mc Eliece |"
-print "*--------------------*"
-print
-print 'Avertissement :'
-print "Faites attention aux fichiers que vous citez"
-print "Aucune protection ne garantit leur integrite dans ce programme"
-print
+if __name__ == "__main__":
+	print "*--------------------*"
+	print "| TIPE sur Mc Eliece |"
+	print "*--------------------*"
+	print
+	print 'Avertissement :'
+	print "Faites attention aux fichiers que vous citez"
+	print "Aucune protection ne garantit leur integrite dans ce programme"
+	print
 
-possible = {'a' : crypt, 'b':decrypt, 'c' : new_keys, 'd' : new_key}
+	possible = {'a' : crypt, 'b':decrypt, 'c' : new_keys, 'd' : new_key}
 
-choix = ''
-while choix != 'q':
-	print "a : Crypter"
-	print "b : Decrypter"
-	print "c : Nouvelle paire de clefs, pour le cryptage"
-	print "d : Nouvelle clef juste pour creer un code correcteur"
-	print 'q : Quitter'
-	choix = raw_input("Que choisissez vous ? ").lower()
+	choix = ''
+	while choix != 'q':
+		print "a : Crypter"
+		print "b : Decrypter"
+		print "c : Nouvelle paire de clefs, pour le cryptage"
+		print "d : Nouvelle clef juste pour creer un code correcteur"
+		print 'q : Quitter'
+		choix = raw_input("Que choisissez vous ? ").lower()
 
-	if choix in possible:
-		possible[choix]()
+		if choix in possible:
+			possible[choix]()
