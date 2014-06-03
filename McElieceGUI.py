@@ -1,32 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-ZetCode PySide tutorial 
-
-This program creates a skeleton of
-a classic GUI application with a menubar,
-toolbar, statusbar and a central widget. 
-
-author: Jan Bodnar
-website: zetcode.com 
-last edited: August 2011
-"""
-
 import sys
 from PySide import QtGui, QtCore
 import McEliece
 import time
 
-class Example(QtGui.QWidget):
+#Constantes a utiliser
+correction = 4
+mod = 499# 1 + x + x**3 + x**6 + x**7
+
+class MainWindow(QtGui.QWidget):
 	
 	def __init__(self):
-		super(Example, self).__init__()
-		
+		super(MainWindow, self).__init__()
 		self.initUI()
 		
-	def initUI(self):               
+	def initUI(self):
 
+		#Première colonne de boutons
 		btn_1 = QtGui.QPushButton("Chiffrer")
 		btn_1.clicked.connect(self.chiffrer)
 		btn_2 = QtGui.QPushButton("Dechiffrer")
@@ -36,6 +28,7 @@ class Example(QtGui.QWidget):
 		btn_4 = QtGui.QPushButton("Quitter")
 		btn_4.clicked.connect(self.close)
 
+		#Seconde colonne de champs
 		self.txt1 = QtGui.QLineEdit("Clef_publique")
 		self.txt1.setToolTip("Clef publique permettant le chiffrage")
 		self.txt2 = QtGui.QLineEdit("Clef_privee")
@@ -44,6 +37,8 @@ class Example(QtGui.QWidget):
 		self.txt3.setToolTip("Fichier a chiffrer ou a dechiffrer")
 		self.txt4 = QtGui.QLineEdit("Fichier_cible")
 		self.txt4.setToolTip("Fichier ou sera stocke le resultat")
+
+		#Troisième colonne avec les boutons parcourir
 		"""
 		btn_5 = QtGui.QPushButton("Parcourir")
 		btn_5.clicked.connect(self.fDialog)
@@ -54,6 +49,8 @@ class Example(QtGui.QWidget):
 		btn_8 = QtGui.QPushButton("Parcourir")
 		btn_8.clicked.connect(self.fDialog)"""
 
+
+		#Formation du layout en grille
 		grid = QtGui.QGridLayout()
 		grid.addWidget(btn_1,0,0)
 		grid.addWidget(btn_2,1,0)
@@ -75,16 +72,16 @@ class Example(QtGui.QWidget):
 		self.show()
 
 	def chiffrer(self):
-		pub_key =self.txt1.text()
+		f_pub =self.txt1.text()
 		f_source = self.txt3.text()
 		f_cible = self.txt4.text()
 		try:
 			#Chargement de la clef et cryptage
 			avant = time.time()
 			try:
-				pub_key = McEliece.clef_publique().load(pub_key)
+				pub_key = McEliece.clef_publique().load(f_pub)
 			except:
-				pub_key = McEliece.clef_correcteur().load(pub_key)
+				pub_key = McEliece.clef_correcteur().load(f_pub)
 			pub_key.chiffrer(f_source,f_cible)
 			print 'Chiffrage reussi en  ' + str(time.time() - avant) + 's'
 			print
@@ -93,16 +90,16 @@ class Example(QtGui.QWidget):
 			print
 
 	def dechiffrer(self):
-		priv_key =self.txt2.text()
+		f_priv =self.txt2.text()
 		f_source = self.txt3.text()
 		f_cible = self.txt4.text()
 		try:
 			#Chargement de la clef et decryptage
 			avant = time.time()
 			try:
-				priv_key = McEliece.clef_correcteur().load(priv_key)
+				priv_key = McEliece.clef_correcteur().load(f_priv)
 			except:
-				priv_key = McEliece.clef_privee().load(priv_key)
+				priv_key = McEliece.clef_privee().load(f_priv)
 			priv_key.dechiffrer(f_source,f_cible)
 			print 'Dechiffrage reussi en ' + str(time.time() - avant)+ 's'
 			print
@@ -111,8 +108,8 @@ class Example(QtGui.QWidget):
 			print
 
 	def creerClefs(self):
-		pub_key = self.txt1.text()
-		priv_key = self.txt2.text()
+		f_pub = self.txt1.text()
+		f_priv = self.txt2.text()
 		avant = time.time()
 		priv_key = McEliece.clef_privee().new(mod,correction)
 		pub_key = McEliece.clef_publique().new(priv_key)
@@ -126,7 +123,7 @@ class Example(QtGui.QWidget):
 def main():
 	
 	app = QtGui.QApplication(sys.argv)
-	ex = Example()
+	ex = MainWindow()
 	sys.exit(app.exec_())
 
 
