@@ -5,6 +5,8 @@
 from galois import *
 from random import *
 from arith import *
+from sage.all import *
+import time
 
 class matrice(arith):
 	"""Classe definissant l'element matrice en Python"""
@@ -23,6 +25,10 @@ class matrice(arith):
 		except AttributeError as ex:
 			print(ex)
 			print [nbligne,nbcolonne,tableau]
+
+	def __eq__(self,other):
+
+		return self.tableau == other.tableau
 
 	def __repr__(self):
 		"""Representation de la matrice sous forme normalisee a l'appel de print"""
@@ -55,6 +61,10 @@ class matrice(arith):
 	def __mul__(self,autre):
 		"""Methode de multiplication par un scalaire et par une matrice"""
 		try:
+
+			#Utilisation de sage :
+			return sage2me( me2sage(self) * me2sage(autre))
+
 			if self.nbcolonne != autre.nbligne:
 				raise TypeError("Probleme dans la taille des matrices a multiplier : "+str(self.nbcolonne) + " " + str(autre.nbligne))
 			tab = []
@@ -263,6 +273,10 @@ class matrice(arith):
 
 	def inverse(self):
 		"""Methode de calcul de l'inverse d'une matrice"""
+
+		#Utilisation de Sage
+		return sage2me(me2sage(self) ** (-1))
+
 		return self.gauss(True)["inverse"]
 
 	def reorganise(self):
@@ -354,6 +368,17 @@ class matrice(arith):
 			return S
 		else :
 			print "On n'inverse que des matrices carrees"
+
+def me2sage(M):
+	aux = [[M.tableau[ i + j*M.nbcolonne ].valeur for i in range(M.nbcolonne)] for j in range(M.nbligne)]
+	return Matrix(GF(2) , aux)
+
+def sage2me(M):
+	aux = []
+	for ligne in M:
+		for i in ligne:
+			aux.append( elt(int(i)) )
+	return matrice(M.nrows(),M.ncols(),aux)
 
 def M_coller(C1,C2,C3,C4):
 	"""Methode pour coller des blocs sur une matrice"""
