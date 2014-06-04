@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PySide import QtGui, QtCore, QtWebKit
+from PySide import QtGui, QtCore
 import McEliece
 import time
 
