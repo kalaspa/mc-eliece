@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PySide import QtGui, QtCore
+from PySide import QtGui, QtCore, QtWebKit
 import McEliece
 import time
 
 #Constantes a utiliser
 correction = 4
 mod = 499# 1 + x + x**3 + x**6 + x**7
+
+def tests(a,b):
+	pass
 
 class MainWindow(QtGui.QWidget):
 	
@@ -39,35 +42,35 @@ class MainWindow(QtGui.QWidget):
 		self.txt4.setToolTip("Fichier ou sera stocke le resultat")
 
 		#Troisième colonne avec les boutons parcourir
-		"""
-		btn_5 = QtGui.QPushButton("Parcourir")
-		btn_5.clicked.connect(self.fDialog)
-		btn_6 = QtGui.QPushButton("Parcourir")
-		btn_6.clicked.connect(self.fDialog)
-		btn_7 = QtGui.QPushButton("Parcourir")
-		btn_7.clicked.connect(self.fDialog)
+		
+		btn_5 = QtGui.QPushButton("Parcourir...")
+		btn_5.clicked.connect(self.findFichierA)
+		btn_6 = QtGui.QPushButton("Parcourir...")
+		btn_6.clicked.connect(self.findFichierB)
+		"""btn_7 = QtGui.QPushButton("Sources")
+		btn_7.clicked.connect(self.sources)
 		btn_8 = QtGui.QPushButton("Parcourir")
 		btn_8.clicked.connect(self.fDialog)"""
 
 
 		#Formation du layout en grille
 		grid = QtGui.QGridLayout()
-		grid.addWidget(btn_1,0,0)
-		grid.addWidget(btn_2,1,0)
-		grid.addWidget(btn_3,2,0)
-		grid.addWidget(btn_4,3,0)
-		grid.addWidget(self.txt1,0,1)
-		grid.addWidget(self.txt2,1,1)
-		grid.addWidget(self.txt3,2,1)
-		grid.addWidget(self.txt4,3,1)
-		"""grid.addWidget(btn_5,0,2)
+		grid.addWidget(btn_1,2,0)
+		grid.addWidget(btn_2,2,1)
+		grid.addWidget(btn_3,2,2)
+		grid.addWidget(btn_4,3,1)
+		grid.addWidget(self.txt1,0,0)
+		grid.addWidget(self.txt2,1,0)
+		grid.addWidget(self.txt3,0,1)
+		grid.addWidget(self.txt4,1,1)
+		grid.addWidget(btn_5,0,2)
 		grid.addWidget(btn_6,1,2)
-		grid.addWidget(btn_7,2,2)
+		"""grid.addWidget(btn_7,3,2)
 		grid.addWidget(btn_8,3,2)"""
 
 		self.setLayout(grid)
 		
-		self.setGeometry(300, 300, 350, 250)
+		self.setGeometry(300, 300, 450, 200)
 		self.setWindowTitle('Mc Eliece')    
 		self.show()
 
@@ -118,8 +121,17 @@ class MainWindow(QtGui.QWidget):
 		#Enregistrement des clefs
 		priv_key.save(f_priv)
 		pub_key.save(f_pub)
-		print "Clefs imprimees"		
-		
+		print "Clefs imprimees"
+
+	def findFichierA(self):
+		f_name =  QtGui.QFileDialog.getOpenFileName( self, 'Open file','/home/akamine/Documents/Code/TIPE/mc-eliece' )[0]
+		self.txt3.setText( f_name )
+
+	def findFichierB(self):
+		f_name =  QtGui.QFileDialog.getSaveFileName( self, 'Save file','/home/akamine/Documents/Code/TIPE/mc-eliece' )[0]
+		self.txt4.setText( f_name )
+
+
 def main():
 	
 	app = QtGui.QApplication(sys.argv)
