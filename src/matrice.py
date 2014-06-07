@@ -60,29 +60,34 @@ class matrice(arith):
 
 	def __mul__(self,autre):
 		"""Methode de multiplication par un scalaire et par une matrice"""
-		try:
+		
+		if self.tableau[0].modulo == 2:
 
 			#Utilisation de sage :
 			return sage2me( me2sage(self) * me2sage(autre))
+		else:
+			
+			try:
 
-			if self.nbcolonne != autre.nbligne:
-				raise TypeError("Probleme dans la taille des matrices a multiplier : "+str(self.nbcolonne) + " " + str(autre.nbligne))
-			tab = []
-			for i in xrange(self.nbligne * autre.nbcolonne):
-				s=0
-				x=i%autre.nbcolonne
-				y=i/autre.nbcolonne
-				for j in xrange(self.nbcolonne):
-					s+=self.tableau[y*self.nbcolonne + j] * autre.tableau[x + j * autre.nbcolonne]
-				tab.append(s)
-			return matrice(self.nbligne,autre.nbcolonne,tab)
-		except AttributeError:
-			tab = []
-			for i in self.tableau:
-				tab.append(autre * i)
-			return matrice(self.nbligne,self.nbcolonne,tab)
-		except TypeError as ex:
-			print ex
+				if self.nbcolonne != autre.nbligne:
+					raise TypeError("Probleme dans la taille des matrices a multiplier : "+str(self.nbcolonne) + " " + str(autre.nbligne))
+				tab = []
+				for i in xrange(self.nbligne * autre.nbcolonne):
+					s=0
+					x=i%autre.nbcolonne
+					y=i/autre.nbcolonne
+					for j in xrange(self.nbcolonne):
+						s+=self.tableau[y*self.nbcolonne + j] * autre.tableau[x + j * autre.nbcolonne]
+					tab.append(s)
+				return matrice(self.nbligne,autre.nbcolonne,tab)
+			except AttributeError:
+				tab = []
+				for i in self.tableau:
+					tab.append(autre * i)
+				return matrice(self.nbligne,self.nbcolonne,tab)
+			except TypeError as ex:
+				print ex
+			
 
 	def __pow__(self,indice):
 		"""Methode pour les puissances de matrice"""
@@ -277,7 +282,7 @@ class matrice(arith):
 		#Utilisation de Sage
 		return sage2me(me2sage(self) ** (-1))
 
-		return self.gauss(True)["inverse"]
+		#return self.gauss(True)["inverse"]
 
 	def reorganise(self):
 		"""Methode pour mettre un carre inversible en haut a gauche"""
@@ -407,10 +412,20 @@ def permutation(taille):
 def inversible(taille):
 	"""Methode de generation aleatoire d'une matriceinversible dans Galois"""
 
+
+	#Utilisation de Sage
+	inversible = False
+	while not(inversible):
+		Q = random_matrix(GF(2) , taille)
+		inversible = len(kernel(Q).basis()) == 0
+	return sage2me(Q)
+
+	"""
 	tableau = []
 	for i in xrange(taille**2):
 		tableau.append(elt(randint(0,1)))
 	return matrice(taille,taille,tableau).RendInversible()
+	"""
 
 def strassen(A,B):
 	"""Supposons que self et autre sont carrees de taille puissance de 2"""

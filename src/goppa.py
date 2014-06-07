@@ -11,9 +11,12 @@ def derivation(P,mod):
 	resultat = []
 	for i in P.liste[1::]:
 		if i != 0:
-			resultat.append(i.iter(len(resultat) + 1))
+			aux = elt(0,mod)
+			for j in range(len(resultat) + 1):
+				aux +=i
+			resultat.append(aux)
 		else:
-			resultat.append(0)
+			resultat.append(elt(0,mod))
 	return polynome(resultat)
 
 def berlekamp(P,mod=2):
@@ -31,16 +34,16 @@ def berlekamp(P,mod=2):
 
 	#On fabrique la matrice de l'application Q -> Q^card modulo P
 	calc = polynome([elt(1,mod)])
-	X = polynome([0,elt(1,mod)])
+	X = polynome([elt(0,mod),elt(1,mod)])
 	X = X.powmod(card,P)
 	for i in xrange(degre):
-		tableau += calc.liste + [0 for k in range(degre-1 - calc.degre())]
+		tableau += calc.liste + [elt(0,mod) for k in range(degre-1 - calc.degre())]
 		calc = calc * X % P
 
 	#On regarde si la matrice qu'on a construite a 1 comme valeur propre
 	#On regarde donc si elle meme - Id possede un vecteur non trivial comme vecteur propre
 	M = matrice(degre,degre,tableau)
-	I =[0 for i in range(degre**2)]
+	I =[elt(0,mod) for i in range(degre**2)]
 	I[::degre+1] = [elt(1,mod) for i in range(degre)]
 	I = matrice(degre,degre ,I)
 
@@ -92,7 +95,14 @@ def parite(g,support,mod):
 
 def generatrice(parite):
 	"""Methode pour donner la generatrice en fonction de la matrice de parite passee a reorganise, en supposant nbligne < nbcolonne"""
+
+	#Utilisation de Sage
+	H = me2sage(parite)
+	aux = kernel( transpose(H) )
+	G = transpose(Matrix( [i for i in aux.basis() ] ))
+	return sage2me(G)
 	
+	"""
 	dic = parite.reorganise()
 	M = dic["tasse"]
 	rang = len(dic["permut"])
@@ -120,10 +130,17 @@ def generatrice(parite):
 	for triple in dic["permut"][::-1]:
 		G=G.echange(triple[0]+1,triple[2]+1)
 	return G
+	"""
 
 def decodage(generatrice):
 	"""Methode pour donner la matrice k,n de decodage telle DG=Ik"""
-	
+
+	#Utilisation de Sage
+	G = me2sage( generatrice )
+	D = G.solve_left( Matrix(GF(2) , [[ i==j for j in range(generatrice.nbcolonne)] for i in range(generatrice.nbcolonne)] ) )
+	return sage2me( D )
+
+	"""
 	dic = generatrice.reorganise()
 	M = dic["tasse"]
 	rang = len(dic["permut"])
@@ -146,6 +163,7 @@ def decodage(generatrice):
 		D=D.echange_colonnes(triple[0]+1,triple[1]+1)
 		D =D.echange(triple[0]+1,triple[2]+1)
 	return D
+	"""
 
 
 def euclide(S,g,mod):

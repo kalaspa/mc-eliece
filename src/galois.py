@@ -43,7 +43,7 @@ class elt(arith):
 		"""Methode d'addition par un autre elt ou par un scalaire"""
 		try:
 			return elt(self.valeur ^ autre.valeur,self.modulo)
-		except:
+		except AttributeError:
 			return elt(self.valeur ^ autre,self.modulo)
 
 	def __mul__(self,autre):

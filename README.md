@@ -6,9 +6,12 @@ L'objectif est l'implémentation du cryptosystème de Mc Eliece.
 
 #Utilisation
 
-Il existe deux versions du programme, l'une en console et l'autre avec une GUI Qt faite avec Pyside.
+Il existe trois versions du programme, deux en console et l'autre avec une GUI Qt faite avec Pyside.
 En raison des dépendances nécessaires pour faire tourner PySide, nous mettons en ligne une version standalone pour linux produite avec cx_freeze dans le dossier dist.
 Tout le dossier est nécessaire pour faire fonctionner le programme.
+
+En ce qui concerne les versions en console, l'une utilise sage et se trouve dans la branche de même nom. Il est necessaire d'utiliser sage pour lancer le script.
+Pour ce faire, utiliser la commande : ./Dossier_de_sage/sage -python McEliece.py
 
 Avant tout, il faut générer une paire de clefs dans le répertoire courant du programme qui seront utilisées pour le chiffrement et le déchiffrement.
 

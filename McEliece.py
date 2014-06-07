@@ -10,8 +10,8 @@ from time import time
 
 
 #Constantes a utiliser
-correction = 4
-mod = 499# 1 + x + x**3 + x**6 + x**7
+correction = 10
+mod = 1423 #499# 1 + x + x**3 + x**6 + x**7
 
 def  crypt():
 	"""Fonction correspondant au choix a : cryptage"""

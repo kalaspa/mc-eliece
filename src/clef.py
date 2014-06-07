@@ -8,6 +8,7 @@ from matrice import *
 from galois import *
 from random import *
 from goppa import *
+import time
 
 
 #Un ensemble de fonctions pour manipuler des strings et des fichiers
@@ -40,7 +41,7 @@ def string2blocbin(string,k):
 		vecteur =  []
 		for i in morceau:
 			vecteur.append(elt(int(i),2))
-		vecteur = vecteur + [0 for i in range(k - len(vecteur))]
+		vecteur = vecteur + [elt(0) for i in range(k - len(vecteur))]
 		liste.append(matrice(k,1,vecteur))
 	return liste
 
@@ -131,7 +132,7 @@ class clef_publique(clef):
 		message = file2blocbin(f_source,self.Gprime.nbcolonne)
 		resultat = []
 		for vecteur in message:
-			erreur = [0 for i in range(self.Gprime.nbligne)]
+			erreur = [elt(0) for i in range(self.Gprime.nbligne)]
 			for i in range(self.correction):
 				erreur[randint(0,self.Gprime.nbligne-1)]=elt(1,2)
 			erreur = matrice(self.Gprime.nbligne,1,erreur)
