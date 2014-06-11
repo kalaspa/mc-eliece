@@ -28,14 +28,13 @@
 
 			\begin{frame}{Notations}
 
-				\begin{itemize}
-					\item $f \in L(\mathbb{F}^{k},\mathbb{F}^{n})$ avec k < n \\
-					\item $ G=Mat(f) $ matrice génératrice $n\times k$\\
-					\item $Ker(H) = Im(f)$ matrice de parité $k\times n$\\
-					\item $ S_{y} : y \in \mathbb{F}^{n} \rightarrow Hy \in \mathbb{F}^{k} $ syndrome \\
-					\item $ \omega : y \in \mathbb{F}^{n} \rightarrow Card( i / y_{i}\neq 0 ) $ poids de Hamming
-					\item d la distance minimale du code
-				\end{itemize}
+				\begin{tabular}{ll}
+					$f \in L(\mathbb{F}^{k},\mathbb{F}^{n})$ & avec $k < n$ \\
+					$ G=Mat(f) $ & $G$ matrice génératrice $n\times k$\\
+					$Ker(H) = Im(f)$ & $H$ matrice de parité $k\times n$\\
+					$ S_{y}(X) = 0 \Leftrightarrow y \in Im(f) $ & $S_{y}(X)$ syndrome \\
+					$ d : y \in \mathbb{F}^{n} \rightarrow Card( i / y_{i}\neq 0 ) $ & $d$ poids de Hamming
+				\end{tabular}
 
 			\end{frame}
 
@@ -44,53 +43,45 @@
 			\begin{frame}{Définition}
 
 				\begin{itemize}
-					\item g polynôme de $ \mathbb{F}_{2^m}[X]$ irréductible
-					\item L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support
+					\item $g$ polynôme de $ \mathbb{F}_{2^m}[X]$ irréductible de degré $t$.
+					\item $L$ = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support
 				\end{itemize}
 
 				On définit un code de Goppa par son syndrome
 				$$\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} \ mod \ g(x)$$
+				\begin{itemize}
+					\item En pratique on prendra $n = 2^{m}$.
+					\item Capacité de correction $ \geq \frac{t}{2}$
+				\end{itemize}
 
-				En pratique on prendra $n = 2^{m}$
-
-			\end{frame}
-
-		\subsection{Matrice de parité}
-
-			\begin{frame}{Matrice de parité}
-
-				$$
-					\frac{1}{{x-\alpha_{i}}} = \frac{1}{g(\alpha_{i})} \sum_{k=0}^{t-1} x^{k}\sum_{j=k+1}^{t} g_{j}\alpha_{i}^{j-1-k}
-				$$
-				De là on déduit une expression d'une matrice de parité.
-				$$
-				\begin{pmatrix}
-					\frac{1}{g(\alpha_{1})} &  \frac{1}{g(\alpha_{2})} & \cdots &  \frac{1}{g(\alpha_{n})} \\
-					\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}\\
-					\vdots & \vdots & \vdots & \vdots\\
-					\frac{1}{g(\alpha_{1})}g_{t}\alpha_{1}^{t-1} &  \frac{1}{g(\alpha_{2})}g_{t}\alpha_{2}^{t-1} & \cdots &  \frac{1}{g(\alpha_{n})}g_{t}\alpha_{n}^{t-1} \\
-				\end{pmatrix}
-				$$
-						
 			\end{frame}
 
 		\subsection{Décodage}
 
 			\begin{frame}{Décodage}
-				Soit le polynôme localisateur d'erreurs $\sigma$
+				\begin{itemize}
+					\item $\sigma_{y}(X)$ polynôme localisateur d'erreurs
+					\item $z = y + \epsilon \in \mathbb{F}^{n} $ avec $y$ mot de code
+					\item $L = (\alpha_{1}, .. ,\alpha{n})$ le support
+				\end{itemize}
 				$$
-					\sigma_{y}(x) = \prod \epsilon_{i}(x-\alpha_{i})
+					\sigma_{z}(X) = \prod (X-\alpha_{i})^{\epsilon_{i}}
 				$$
-				Il faut résoudre l'équation clef suivante :
+				Soit l'équation clef suivante :
 				$$
-					\omega_{y}(x) = S_{y}(x) \sigma_{y}(x) \ mod \ g
+					\omega_{z}(X) = S_{z}(X) \sigma_{z}(X) \ mod \ g
 				$$
-				On montre son unicité.
-				On explicite une solution avec l'algorithme d'Euclide étendu.
+				\begin{itemize}
+					\item On montre que $deg(\omega_{z}(X) < \frac{t}{2}) $
+					\item Unicité du couple solution avec les contraintes de degrés
+					\item Existence grâce à l'algorithme d'Euclide étendu
+				\end{itemize}
+
 			\end{frame}
 
 	\section{Mc Eliece}
 
+		
 		\subsection{Clefs}
 
 			\begin{frame}{Clefs}
@@ -112,12 +103,15 @@
 		\subsection{Principe}
 
 			\begin{frame}{Principe}
-				
+
+				Soit $x \in \mathbb{F}^{k}$ le message à envoyer de Alice vers Bob
+
 				\begin{itemize}
-					\item $x \in \mathbb{F}^{k}$ le message a envoyer
-					\item $G'x + \epsilon = PGQx + \epsilon$ message envoyé
-					\item $ GQ + P^{-1}\epsilon$ peut être corrigé
-					\item Connaissant Q on déduit x le message initial
+					\item Bob partage $G'=PGQ$ et une capacité de correction
+					\item Alice envoie $y = PGQx + \epsilon$
+					\item Bob calcule $P^{-1}y = GQx + P^{-1}\epsilon $
+					\item Bob corrige l'erreur et obtient $Qx$
+					\item Bob obtient $x$ en connaissant Q inversible
 				\end{itemize}
 
 				Sécurité par 2 problèmes de théorie des codes :
@@ -128,6 +122,8 @@
 
 			\end{frame}
 
+		
+
 	\section{Mise en œuvre}
 
 		\subsection{POO}
@@ -135,12 +131,16 @@
 			\begin{frame}{Programmation Orientée objet}
 				Rédaction de classes :
 				\begin{itemize}
-					\item Corps de galois $\mathbb{F}_{p^{m}}$
-					\item Optimisation en binaire pour p=2
+					\item Corps de Galois $\mathbb{F}_{p^{m}}$
+					\item Optimisation en binaire pour $p=2$
 					\item Matrices
-					\item Polynomes
-					\item Clefs publiques et clefs privées
+					\item Polynômes
 				\end{itemize}
+
+				Intérêts : Pédagogique, flexibilité de Python.
+
+				Inconvénients : Trop lent, peu optimisé par rapport aux bibliothèques standards.
+
 			\end{frame}
 
 		\subsection{Berlekamp-Hensel}
@@ -157,6 +157,25 @@
 				$$
 				
 			\end{frame}
+
+
+
+		\begin{frame}{Bilan}
+			
+			Programme fonctionnel mais lent :
+			\begin{itemize}
+				\item Paramètres conseillés $ (n,k,t) = (1024,524,50) $
+				\item 300s pour générer les clefs de paramètres $ (256 ,184 ,9 ) $
+			\end{itemize}
+
+			Possibilités d'optimisation :
+			\begin{itemize}
+				\item Usage de Sage pour le calcul matriciel : 100s pour $(1024,524,20)$
+				
+			\end{itemize}
+
+
+		\end{frame}
 		
 	    
 
