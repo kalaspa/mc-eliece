@@ -43,15 +43,15 @@
 			%def, principe
 			%Principe
 			Tout d'abord, définissons quelques notions des codes correcteurs.
-			Un code correcteur est l'image C d'une application linéaire f de $\mathbb{F}^{k}$ vers $\mathbb{F}^{n}$.
-			On définit, avec les conventions du cours de mathématiques, les matrices génératrices G et de parité H :
+			Un code correcteur est l'image $C$ d'une application linéaire $f$ de $\mathbb{F}^{k}$ vers $\mathbb{F}^{n}$.
+			On définit, avec les conventions du cours de mathématiques, les matrices génératrices $G$ et de parité $H$ :
 			\begin{eqnarray*}
 				G &=& Mat(f) \\
 				Ker(H) &=& Im(f)
 			\end{eqnarray*}
 
-			La distance minimale d du code est le poids de Hamming le plus faible d'un mot non nul du code.
-			La capacité de correction t d'un code correcteur vérifie cette relation :
+			La distance minimale $d$ du code est le poids de Hamming le plus faible d'un mot non nul du code.
+			La capacité de correction $t$ d'un code correcteur vérifie cette relation :
 			$$
 				t \leq \frac{d-1}{2}
 			$$
@@ -60,12 +60,12 @@
 		\section*{Outils informatiques}
 			% bibliothèques matrices, corps finis, polynômes
 			Pour démarrer le projet, il a fallu développer des modules pour utiliser des matrices et des polynômes sur des corps finis.
-			Pour cela, nous avons utilisé la programmation orientée objet et la surcharge des opérateurs permise par Python.
-			Nous avions ainsi des classes de polynômes et de matrices à coefficients aussi bien réels que de $\mathbb{F}_{p^{m}}$.
+			Pour cela, nous avons utilisé la programmation orientée objet, le typage dynamique et la surcharge des opérateurs permise par Python.
+			Nous avons défini des classes de polynômes et de matrices à coefficients aussi bien réels que de $\mathbb{F}_{p^{m}}$.
 
 			Une optimisation que nous avons trouvé consiste à considérer uniquement le cas $p = 2$.
-			Ainsi, un élément de $\mathbb{F}_{2^{m}}$ équivalent à un polynôme dans $\mathbb{F}_{2}[X]/P$ peut être stocké comme un nombre en base binaire.
-			Les opérations sur ces éléments deviennent des opérations binaires beaucoup plus rapides que l'implémentation plus mathématique.
+			Ainsi, un élément de $\mathbb{F}_{2^{m}}$ équivalent à une classe d'équivalence de $\mathbb{F}_{2}[X]/P$ peut être stocké comme un nombre en base binaire.
+			Les opérations sur ces éléments deviennent des opérations binaires beaucoup plus rapides que l'implémentation mathématique.
 
 		\section*{Algorithmes supplémentaires}
 			%Gauss
@@ -82,29 +82,29 @@
 			%Syndrome
 			\cite{finiasz}
 			Nous avons choisi une définition du code de Goppa à partir de son syndrome.
-			On identifie polynôme et vecteur.
-			Soit g un polynôme dans $\mathbb{F}_{2^{m}}[X]$ irréductible de degré t.
-			Soit L = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support, en pratique nous prendrons $n = 2^{m}$.
-			Le syndrome d'un mot $y \in \mathbb{F}_{2}^{n}$ est défini par :
+			On identifie représentant d'une classe d'équivalence, polynôme et vecteur.
+			Soit $g$ un polynôme dans $\mathbb{F}_{2^{m}}[X]$ irréductible de degré $t$.
+			Soit $L$ = $ (\alpha_{1},..,\alpha_{n})  \in \mathbb{F}_{2^{m}}^{n}$ le support, en pratique nous prendrons $n = 2^{m}$.
+			Le syndrome d'un mot $z \in \mathbb{F}_{2}^{n}$ est défini par :
 			$$
-				\mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = 0 \ mod \ g(x)
+				\mathbf{S}_{z}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = 0 \ mod \ g(x)
 			$$
 
-			Par un calcul donné en annexe \ref{parite}, on construit explicitement une matrice de parité H de ce code de Goppa.
-			Grâce au pivot de Gauss, nous avons déterminé le noyau de H pour construire une matrice génératrice d'un code de Goppa.
+			Par un calcul donné en annexe \ref{parite}, on construit explicitement une matrice de parité $H$ de ce code de Goppa.
+			Grâce au pivot de Gauss, nous déterminons le noyau de $H$ pour construire une matrice génératrice d'un code de Goppa.
 			La capacité de correction est au moins égale à $\frac{t-1}{2}$.
 
 
 		\section*{Décodage}
 			%Équation clef
-			Nous avons défini les polynômes localisateur $\sigma$ et évaluateur $\omega$ d'erreurs pour un mot $y + \epsilon$ de $\mathbb{F}^{n}$ avec y mot de code.
+			Nous définissons les polynômes localisateur $\sigma_{z}$ et évaluateur $\omega_{z}$ d'erreurs pour un mot $z = y + \epsilon$ de $\mathbb{F}^{n}$ avec y mot de code.
 			\begin{eqnarray}
-				\sigma(x) &=& \prod \epsilon_{i}(x - \alpha_{i}) \\
-				\omega(x) &=& \sigma(x) \mathbf{S}_{\epsilon}(x) \ mod \ g(x)
+				\sigma_{z}(x) &=& \prod \epsilon_{i}(x - \alpha_{i}) \\
+				\omega_{z}(x) &=& \sigma_{z}(x) \mathbf{S}_{\epsilon}(x) \ mod \ g(x)
 			\end{eqnarray}
 
-			La connaissance du polynôme localisateur d'erreur $\sigma$ et de ses racines permet la correction de l'erreur.
-			Pour déterminer ces polynômes, nous montrons dans l'annexe \ref{eqclef} l'unicité d'un couple $ (\sigma,\omega) $ solution de l'équation 2 appelée équation clef, avec des contraintes sur les degrés des polynômes.
+			La connaissance du polynôme localisateur d'erreur $\sigma_{z}$ et de ses racines permet la correction de l'erreur.
+			Pour déterminer ces polynômes, nous montrons dans l'annexe \ref{eqclef} l'unicité d'un couple $ (\sigma_{z},\omega_{z}) $ solution de l'équation 2 appelée équation clef, avec des contraintes sur les degrés des polynômes.
 
 			Nous exhibons un tel couple solution avec l'algorithme d'Euclide étendu appliqué au couple $ (S_{y+\epsilon},g) $.
 			Pour déterminer les racines du polynôme localisateur d'erreurs, étant donné quelles sont toutes simples, nous avons préféré évaluer ce polynôme de manière exhaustive plutôt que d'utiliser l'algorithme de Berlekamp-Hensel plus lourd.
@@ -114,24 +114,24 @@
 			Bien qu'avec cette définition, la construction de la matrice de parité soit explicite, aucune source ne montre comment former la matrice génératrice.
 			Nous avons donc utilisé le pivot de Gauss pour déterminer Ker(H) et construire une matrice G telle que Im(G) = Ker(H).
 
-			Pour ce faire, nous avons utilisé le pivot de Gauss pour transfomer avec des échanges de lignes et de colonnes H en H' telle que :
+			Pour ce faire, nous avons utilisé le pivot de Gauss pour transformer avec des échanges de lignes et de colonnes $H$ en $H'$ telle que :
 			$$ H' = 
 			\begin{pmatrix}
 				U & V \\
 				W & Z
 			\end{pmatrix}
 			$$
-			Avec U carrée inversible de même rang r que H'.
-			Nous avons construit G' la matrice génératrice associée comme :
+			Avec $U$ carrée inversible de même rang r que $H'$.
+			Nous avons construit $G$' la matrice génératrice associée comme :
 			$$
 			\begin{pmatrix}
 				-U^{-1}V \\
 				I_{n-r}
 			\end{pmatrix}
 			$$
-			On obtient bien H'G' = 0 avec rang(G) = dim(Ker(H)).
-			En faisant cette transformation de H en H', on constate que $H' = LHC$, avec L les changements de lignes et C les changements de colonnes.
-			L et C sont inversibles.
+			On obtient bien $H'G$' = 0 avec $rang(G) = dim(Ker(H))$.
+			En faisant cette transformation de $H$ en $H'$, on constate que $H' = LHC$, avec $L$ les changements de lignes et $C$ les changements de colonnes.
+			$L$ et $C$ sont inversibles.
 			On en déduit :
 			\begin{eqnarray*}
 				H'G' &=& LHCG' = 0\\
@@ -165,21 +165,19 @@
 			$$
 				P^{-1}y = GQx + P^{-1}\epsilon
 			$$
-			Comme P est une matrice de permutation, l'erreur est toujours corrigeable.
+			Comme $P$ est une matrice de permutation, l'erreur est toujours corrigeable.
 			Nous utilisons notre méthode efficace de décodage pour trouver $Qx$.
-			Connaissant Q inversible, on accède au message initial.
+			Connaissant $Q$ inversible, on accède au message initial.
 
 
 		\section*{Sécurité}
 			 %Syndrome decoding et indistinguabilité
 			 \cite{veron}
 			 L'intérêt de ce système de cryptage est qu'il repose sur des problèmes de théorie des codes.
-			 A l'heure actuelle, il existe des algorithmes qui sur des ordinateurs quantiques peuvent résoudre efficacement les problèmes de théorie des nombres sur lesquels s’appuie le RSA par exemple.
-			 Il n'existe pas encore de tels algorithmes pour la théorie des codes ce qui relance son intérêt malgré la grande taille de ses clefs.
 
 			 Le premier problème utilisé est celui de Syndrome Decoding.
 			 Il consiste en la détermination de l'unique vecteur d'erreur associé à un syndrome donné d'un code linéaire aléatoire.
-			 Mc Eliece, Berlekamp et Van Tilborg ont prouvé l'équivalence du problème de décision associé au problème dit des trois mariages qui est NP-complet.
+			 Mc Eliece, Berlekamp et Van Tilborg ont prouvé l'équivalence du problème de décision associé avec le problème dit des trois mariages qui est NP-complet.
 			 Ce problème est donc bien NP-complet.
 
 			 Le second problème utilisé est celui de l'indistinguabilité d'un code de Goppa aléatoire.
@@ -197,13 +195,25 @@
 			Notre programme consiste en un script Python gérant indifféremment le cryptage, le décryptage des messages en prenant en argument les clefs utilisées.
 			Il permet aussi la génération des paires de clef.
 			Cependant, la totalité de ces opérations est contenue dans les classes de clef ce qui permet la réutilisation pratique des ces objets sans notre script d’interfaçage.
+			Pour Linux, nous avons même mis a disposition une interface graphique en Qt disponible sur le dépôt ainsi qu'une paire de clef pré-calculées pour d'éventuels tests par des tiers.
 
 	\part*{Conclusion}
 
 		A la fin de l'année, nous disposons d'un programme fonctionnel mais trop lent pour répondre aux exigences de sécurité actuelles.
-		Les paramètres conseillés sont (n,k,t) = (1024,524,50), nous n'arrivons en temps raisonnable qu'à (n,k,t) = (256,100,5).
+		Les paramètres conseillés sont $(n,k,t) = (1024,524,50)$, nous n'arrivons en temps raisonnable (300s) qu'à $(n,k,t) = (256,100,5)$.
 		Ces limitations peuvent être dues à la nature interprétée de Python ou au fait que nous n'avons pas utilisé les bibliothèques écrites en C et incluses dans Python.
-		Les opérations de multiplications et d'inversions d'aussi grandes matrices sont rédhibitoires et même l'implémentation de l'algorithme de Strassen pour la mutliplication ne suffit pas à atteindre les exigences de rapidité.
+		Les opérations de multiplications et d'inversions d'aussi grandes matrices sont rédhibitoires et même l'implémentation de l'algorithme de Strassen pour la multiplication ne suffit pas à atteindre les exigences de rapidité.
+
+		A la recherche d'optimisation, nous avons cherché les modules Python adéquats
+		Mais les matrices booléennes pré-implémentées en Python (Numpy) considèrent le 'ou' logique comme loi additive.
+		Néanmoins nous avons mené des tests comparatifs avec Sage comme logiciel externe.
+		La rapidité de cette bibliothèque permet bien de se ramener en temps raisonnable à un niveau de sécurité acceptable.
+		Le code grossièrement modifié est d'ailleurs disponible dans la branche 'Sage' du dépôt.
+
+		Le cryptosystème de Mc Eliece est donc un système de chiffrage utilisable en pratique.
+		L'obstacle de la taille des clefs semble s'amoindrir grâce aux débits disponibles de plus en plus importants.
+		De plus, ce système s'appuie sur des problèmes de théorie des codes encore résistants face à un éventuel ordinateur quantique.
+		Ce qui n'est pas le cas du RSA pour lequel on dispose déjà d'algorithmes quantiques permettant de le casser.
 
 
 
@@ -215,63 +225,64 @@
 	\section{Algorithme de Berlekamp-Hensel}
 		\label{BH}
 		\cite{berlekamp}
-		Pour générer un code de Goppa aléatoire, il faut un polynôme de $ \mathbb{F}_{2^{m}}[X] $ de degré t irréductible.
-		Nous avons utilisé l'algorithme de Berlekamp pour tester l'irréductibilité d'un polynôme dans un corps fini.
+		Pour générer un code de Goppa aléatoire, il faut un polynôme g de $ \mathbb{F}_{2^{m}}[X] $ de degré t irréductible.
+		Nous avons utilisé l'algorithme de Berlekamp pour tester l'irréductibilité d'un tel polynôme dans un corps fini.
 		Il est plus simple à démontrer que sa version utilisée pour factoriser ces polynômes.
 		Nous en donnons ici le principe et quelques morceaux de démonstration.
 
 		\begin{prop}
 			Soit $H \in \mathbb{F}_{2^{m}}[X]$, 
-			$$H^{2^{m}} - H = \prod_{c \in \mathbb{F}_{2^{m}-1}}(H-c)$$
+			$$H^{2^{m}} - H = \prod_{c \in \mathbb{F}_{2^{m}}-\{0\}}(H-c)$$
 		\end{prop}
 		En effet,
-		$$ \forall c \in \mathbb{F}_{2^{m}}, H^{2^{m}}-H = H(H^{2^{m}-1}-1) = H(H^{2^{m}-1}-c^{2^{m}-1})$$
+		$$ \forall c \in \mathbb{F}_{2^{m}}-\{0\}, H^{2^{m}}-H = H(H^{2^{m}-1}-1) = H(H^{2^{m}-1}-c^{2^{m}-1})$$
 		Une formule connue montre que H-c divise le polynôme de droite.
 		Comme les H-c sont premiers entre eux deux à deux et divisent $ H^{2^{m}} -H $, leur produit le divise.
 		L'égalité vient de l'égalité du degré et du premier coefficient.
 
-		Maintenant on veut tester l'irréductibilité d'un polynôme P unitaire sans facteur multiple.
+		Maintenant on veut tester l'irréductibilité d'un polynôme g unitaire sans facteur multiple.
 		\begin{prop}
-			Si $H \in \mathbb{F}_{2^{m}}[X]$ unitaire satisfait $H^{2^{m}} = H \ mod(P)$, alors 
-			$$P = \prod_{c\in \mathbb{F}_{2^{m}}}pgcd(P,H-c)$$
+			Si $H \in \mathbb{F}_{2^{m}}[X]$ unitaire satisfait $H^{2^{m}} = H \ mod(g)$, alors 
+			$$g = \prod_{c\in \mathbb{F}_{2^{m}}}pgcd(g,H-c)$$
 		\end{prop}
 
 		Pour le montrer on utilise la propriété précédente.
-		P divise $H^{2^{m}} - H$ donc $P = pgcd(P,\prod(H-c))$.
-		Les H-c étant premiers entre eux deux à deux, P divise le produit des PGCD.
-		De plus chacun des $pgcd(P,H-c)$ divise P et ils sont premiers deux à deux donc leur produit divise P.
+		g divise $H^{2^{m}} - H$ donc $g = pgcd(g,\prod(H-c))$.
+		Les H-c étant premiers entre eux deux à deux, g divise le produit des PGCD.
+		De plus chacun des $pgcd(g,H-c)$ divise g et ils sont premiers deux à deux donc leur produit divise g.
 		Les deux polynômes étant unitaires l'égalité est satisfaite.
 
-		On remarque que si $0<deg(H) <t$, pgcd(P,H-c) ne vaut jamais P, donc met en évidence que P n'est pas irréductible.
-		On en conclut donc que l'existence de H  de degré $\in 2..t-1$ implique que P est réductible.
+		On remarque que si $0<deg(H) <t$, pgcd(g,H-c) ne vaut jamais g, donc met en évidence que g n'est pas irréductible.
+		On en conclut donc que l'existence de H  de degré $\in 2..t-1$ implique que g est réductible.
 		Il reste à montrer l'équivalence.
 
 		\begin{prop}
-			Soit $P = P_{1} \times ... \times P_{r}$.
-			D'après le théorème des restes chinois, $H \rightarrow (H \ mod(P_{1}),...H \ mod(P_{r}))$ de $\mathbb{F}[X]/P \rightarrow (\mathbb{F}[X]/P_{1},...,\mathbb{F}[X]/P_{r})$ est un isomorphisme d'anneaux.
-
-			Comme les $P_{i}$ sont irréductibles, $\{x \in \mathbb{F}[X]/P_{1}/ x = x^{2{m}} \}$ est de cardinal $2^{m}$.
-			Donc il existe $2^{mr}$ polynômes de degrés inférieurs à t-1 vérifiant la propriété désirée.
-			Par suite si P est réductible il existe au moins un polynôme H avec $1 < deg(H) < t$ et $H^{2^{m}} = H \ mod(P)$.
-			On a donc l'équivalence voulue.
+			Soit $g = g_{1} \times ... \times g_{r}$.
+			D'après le théorème des restes chinois, $H \rightarrow (H \ mod(g_{1}),...H \ mod(g_{r}))$ de $\mathbb{F}[X]/g \rightarrow (\mathbb{F}[X]/g_{1},...,\mathbb{F}[X]/g_{r})$ est un isomorphisme d'anneaux.
 		\end{prop}
 
-		Maintenant qu'on a une équivalence sympatique entre l'irréductibilité de P et la non existence du polynôme H, on utilise le morphisme de Frobenius.
+		Comme les $g_{i}$ sont irréductibles, $\{x \in \mathbb{F}[X]/g_{1} , x = x^{2^{m}} \}$ est de cardinal $2^{m}$.
+		Donc il existe $2^{mr}$ polynômes de degrés inférieurs à t-1 vérifiant la propriété désirée.
+		Par suite si g est réductible il existe au moins un polynôme H avec $1 < deg(H) < t$ et $H^{2^{m}} = H \ mod(g)$.
+		On a donc l'équivalence voulue.
+
+
+		Maintenant qu'on a une équivalence sympathique entre l'irréductibilité de g et la non existence du polynôme H, on utilise le morphisme de Frobenius.
 		C'est à dire que l'application suivante est linéaire.
 		\begin{eqnarray*}
-			\mathbb{F}_{2^{m}}/P &\rightarrow& \mathbb{F}_{2^{m}}/P \\
+			\mathbb{F}_{2^{m}}[X]/g &\rightarrow& \mathbb{F}_{2^{m}}[X]/g \\
 			H &\rightarrow& H^{2^{m}}
 		\end{eqnarray*}
 
 		On en déduit l'algorithme suivant :
 		\begin{algo}
-			Soit P de degré t dont on veut tester l'irréductibilité :
+			Soit g de degré t dont on veut tester l'irréductibilité :
 			\begin{enumerate}
-				\item Si $pgcd(P,P') \neq 0$ alors P possède des facteurs multiples, à fortiori P est réductible, on arrête l’exécution.
+				\item Si $pgcd(g,g') \neq 0$ alors g possède des facteurs multiples, à fortiori g est réductible, on arrête l’exécution.
 				\item On calcule A la matrice du morphisme de Frobenius dans la base canonique
 				\item On détermine le noyau de (A - Id) dans la base canonique
-				\item Si $dim(Ker(A-Id)) = 1$ alors les seuls H existant sont de degré 1 et P est irréductible
-				\item Sinon P est réductible
+				\item Si $dim(Ker(A-Id)) = 1$ alors les seuls H existant sont de degré 1 et g est irréductible
+				\item Sinon g est réductible
 			\end{enumerate}
 		\end{algo}
 
@@ -281,7 +292,8 @@
 		Nous souhaiterions donner à notre code de Goppa défini par son syndrome une structure plus visiblement linéaire. Nous allons construire sa matrice de parité.
 
 		\begin{defi}
-			Nous allons définir une famille de polynômes  $ \mathbf{f}_{i} $  inverses des  $ (x-\alpha_{i}) $ . Cela est possible car g étant irréductible,  $ \mathbb{F}[X]/g $  est un corps :
+			Nous allons définir une famille de polynômes  $ \mathbf{f}_{i} $  inverses des  $ (x-\alpha_{i}) $ . Cela est possible car g étant irréductible,  $ \mathbb{F}[X]/g $  est un corps.
+			On notera l'abus de langage consistant à confondre représentant de la classe d'équivalence de $ \mathbf{f}_{i} $ et polynôme.
 			 $$  \mathbf{f}_{i}(x)(x-\alpha_{i}) = 1 \ mod \ g(x) $$ 
 			On a donc que :
 			 $$ \forall y \in \mathbb{F}^{n} \ \mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = \sum_{i=1}^{n} \mathbf{f}_{i}(x)y_{i}  $$ 
@@ -297,11 +309,11 @@
 			= \frac{1}{g(\alpha_{i})} \sum_{k=0}^{t-1} x^{k}\sum_{j=k+1}^{t} g_{j}\alpha_{i}^{j-1-k}$$
 		\end{prop}
 
-		Maintenant qu'on a montré leur existence et qu'on les a calculés, nous utilisons les fi pour construire la matrice de parité.
-		Pour cela nous allons identifier un polynôme comme un vecteur de degré t.
+		Maintenant qu'on a montré leur existence et qu'on les a calculés, nous utilisons les $\mathbf{f}_{i}$ pour construire la matrice de parité.
+		Pour cela nous allons identifier un polynôme comme un vecteur de dimension t.
 
 		\begin{defi}
-			On a donc des polynômes $(fi)_{1\leq i \leq n}$ de degrés t-1 que l'on va identifier comme des vecteurs colonnes de dimension t-1.
+			On a donc des polynômes $(\mathbf{f}_{i})_{1\leq i \leq n}$ de degrés t-1 que l'on va identifier comme des vecteurs colonnes de dimension t.
 			$$ \forall y \in \mathbb{F}^{n} \ \mathbf{S}_{y}(x) = \sum_{i=1}^{n} \frac{y_{i}}{x-\alpha_{i}} = \sum_{i=1}^{n} \mathbf{f}_{i}(x)y_{i}$$
 			$$ \forall y \in \mathbb{F}^{n} \  \mathbf{S}_{y}(x) =(f_{1}(x), ... , f_{n}(x))y $$
 			On se retrouve donc avec une matrice de calcul de syndrome :
@@ -325,17 +337,16 @@
 		\end{defi}
 
 		Maintenant que nous possédons sa matrice de parité, le codage est possible. 
-		La construction de G matrice génératrice de notre code de Goppa s'effectue simplement.
+		La construction de G matrice génératrice de notre code de Goppa s'effectue comme un calcul de noyau.
 
 	\section{Démonstration du décodage}
 		\label{eqclef}
-		La résolution de cette équation clef est la détermination de $\sigma$.
+		La clef du décodage est la résolution de l'équation clef, c'est à dire la détermination de $\sigma_{z}$.
 		Pour cela il existe plusieurs techniques, nous étudierons celle utilisant l'algorithme d'Euclide.
 		L'algorithme d'Euclide étendu tel qu'utilisé est redonné plus tard.
 
 		\begin{prop} \label{unicite} \cite{goppa}
-			On a unicité de la résolution de l'équation clef pour les polynômes $\sigma$ et $\omega$ de degrés  $deg(\sigma) \leq \frac{t}{2}$ et $ deg(\omega) < \frac{t}{2} $ à un scalaire près.
-			On suppose de plus que les deux polynômes sont de degrés minimum, c'est à dire premiers entre eux.
+			On a unicité de la résolution de l'équation clef pour les polynômes $\sigma$ et $\omega$ premiers entre eux de degrés  $deg(\sigma) \leq \frac{t}{2}$ et $ deg(\omega) < \frac{t}{2} $ à un scalaire près.
 			En effet, soient $(\sigma_{1},\omega_{1})$ et $(\sigma_{2},\omega_{2})$ deux solutions de degrés inférieurs à $\frac{t}{2}$.
 			On a :
 			$$ \omega_{1}(x) = \sigma_{1}(x)\mathbf{S}_{y}(x) \ mod \ g(x) \ , \ \omega_{2}(x) = \sigma_{2}(x)\mathbf{S}_{y}(x) \ mod \ g(x) $$
